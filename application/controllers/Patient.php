@@ -55,8 +55,6 @@ class Patient extends CI_Controller {
                 $this->data['user']=$this->session->userdata('auth')->login;
                 /*Загруаем пациентов под ЛПУ*/
                 $this->data['patient'] = $this->patient_model->Info($patient_id);
-                $this->data['xml'] = new SimpleXMLElement($this->data['patient']['xml']);
-                $this->data['xml_orig']= $this->data['patient']['xml'];
                 $this->data['patient']['files']=$this->patient_model->GetPatientFiles($patient_id);
 
                 /*шаблон страницы*/

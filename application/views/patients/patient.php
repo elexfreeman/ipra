@@ -29,7 +29,7 @@
         <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
         <ol class="breadcrumb">
             <li><a href="<?php echo $main_page_link; ?>">Рабочий стол</a></li>
-            <li><?php echo $xml->Person->FIO->LastName; ?> <?php echo $xml->Person->FIO->FirstName; ?> <?php echo $xml->Person->FIO->SecondName; ?></li>
+            <li><?php echo $patient['LastName']; ?> <?php echo $patient['FirstName']; ?> <?php echo $patient['SecondName'];?></li>
 
         </ol>
         <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
@@ -46,32 +46,32 @@
                     <div class="panel panel-primary">
                         <div class="panel-heading">
                             <h3 class="panel-title">
-                                Пациент: <?php echo $xml->Person->FIO->LastName; ?> <?php echo $xml->Person->FIO->FirstName; ?>
-                                <?php echo $xml->Person->FIO->SecondName; ?>
+                                Пациент: <?php echo $patient['LastName']; ?> <?php echo $patient['FirstName']; ?>
+                                <?php echo $patient['SecondName']; ?>
                             </h3>
                         </div>
                         <div class="panel-body">
                             <div class="row">
                                 <div class="col-md-4">
-                                    <b>Телефон: </b><?php echo $xml->Person->Phones->Phone; ?>
+                                    <b>Телефон: </b><?php echo$patient['Phone']; ?>
                                     </div>
                                 <div class="col-md-4">
-                                    <b>Пол: </b><?php if ($xml->Person->IsMale == 'true') echo 'Мужской'; else echo 'Женский'; ?>
+                                    <b>Пол: </b><?php if ($patient['IsMale'] == 'true') echo 'Мужской'; else echo 'Женский'; ?>
                                 </div>
                                 <?php
-                                $BirthDate = strtotime($xml->Person->BirthDate );
+                                $BirthDate = strtotime($patient['BirthDate'] );
                                 $BirthDate = date( 'd.m.Y', $BirthDate );
                                 ?>
                                 <div class="col-md-4"><b>Дата рождения: </b><br><?php echo $BirthDate; ?></div>
                             </div>
                             <div class="row top10">
                                 <div class="col-md-12">
-                                    <b>Гражданство: </b><br><?php echo $xml->Person->Citizenship->Value; ?>
+                                    <b>Гражданство: </b><br><?php echo $patient['Citizenship']; ?>
                                 </div>
                             </div>
                             <div class="row top10">
                                 <div class="col-md-12">
-                                    <b>Адре регистрации: </b><br><?php echo $xml->Person->RegAddress->Value; ?>
+                                    <b>Адре регистрации: </b><br><?php echo $patient['RegAddress_Place']; ?>
                                 </div>
                             </div>
                             <div class="row top10">
@@ -90,27 +90,32 @@
                 <div class="col-sm-4">
                     <div class="panel panel-mint">
                         <div class="panel-heading">
-                            <h3 class="panel-title">Документ: <?php echo $xml->Person->IdentityDoc->Title; ?></h3>
+                            <h3 class="panel-title">Документ: <?php echo $patient['IdentityDoc_Title']; ?></h3>
                         </div>
                         <div class="panel-body">
                             <div class="row top10">
                                 <div class="col-md-6">
-                                    <b>Серия: </b><br><?php echo $xml->Person->IdentityDoc->Series; ?>
+                                    <b>Серия: </b><br><?php echo $patient['IdentityDoc_Series']; ?>
                                 </div>
                                 <div class="col-md-6">
-                                    <b>Номер: </b><br><?php echo $xml->Person->IdentityDoc->Number; ?>
+                                    <b>Номер: </b><br><?php echo $patient['IdentityDoc_Number']; ?>
                                 </div>
                             </div>
                             <div class="row top10">
                                 <div class="col-md-12"
-                                    ><b>Выдан: </b><?php echo $xml->Person->IdentityDoc->Issuer; ?>
+                                    ><b>Выдан: </b><?php echo $patient['IdentityDoc_Issuer']; ?>
                                 </div>
                             </div>
                             <div class="row top10">
                                 <div class="col-md-12">
                                     <?php
-                                    $IssueDate = strtotime($xml->Person->IdentityDoc->IssueDate );
-                                    $IssueDate = date( 'd.m.Y', $IssueDate );
+                                    $IssueDate='';
+                                    if(isset($patient['IdentityDoc_IssueDate']))
+                                    {
+                                        $IssueDate = strtotime($patient['IdentityDoc_IssueDate'] );
+                                        $IssueDate = date( 'd.m.Y', $IssueDate );
+                                    }
+
                                     ?>
                                     <b>Дата выдачи: </b><br><?php echo $IssueDate; ?>
                                 </div>
@@ -124,7 +129,7 @@
                             <h3 class="panel-title">Бюро</h3>
                         </div>
                         <div class="panel-body">
-                            <div class="col-sm-12"><?php echo $xml->Buro->FullName; ?></div>
+                            <div class="col-sm-12"><?php echo $patient['Buro_FullName']; ?></div>
 
                         </div>
                     </div>
@@ -226,18 +231,19 @@
                             <h3 class="panel-title">Медицинские данные:</h3>
                         </div>
                         <div class="panel-body">
-                            <div class="col-sm-6"><b>Группа: </b><br><?php echo $xml->MedSection->EventGroups->Group->GroupType->Value; ?></div>
+                            <div class="col-sm-6">
+                                <b>Группа: </b><br><?php //echo $xml->MedSection->EventGroups->Group->GroupType->Value; ?></div>
                             <?php
-                            $PeriodTo = strtotime( $xml->MedSection->EventGroups->Group->PeriodTo );
+                           /* $PeriodTo = strtotime( $xml->MedSection->EventGroups->Group->PeriodTo );
                             $PeriodTo = date( 'd.m.Y', $PeriodTo );
 
                             $PeriodFrom = strtotime( $xml->MedSection->EventGroups->Group->PeriodFrom );
-                            $PeriodFrom = date( 'd.m.Y', $PeriodFrom );
+                            $PeriodFrom = date( 'd.m.Y', $PeriodFrom );*/
                             ?>
-                            <div class="col-sm-12"><b>Период с:</b> <?php echo $PeriodFrom; ?> <b>
-                                    по:</b> <?php echo $PeriodTo; ?></div>
+                            <div class="col-sm-12"><b>Период с:</b> <?php //echo $PeriodFrom; ?> <b>
+                                    по:</b> <?php //echo $PeriodTo; ?></div>
 
-                            <div class="col-sm-6"><b>Мед. организация получатель: </b><br><?php echo $xml->MedSection->SenderMedOrgName; ?></div>
+                            <div class="col-sm-6"><b>Мед. организация получатель: </b><br><?php //echo $xml->MedSection->SenderMedOrgName; ?></div>
                         </div>
                     </div>
                 </div>

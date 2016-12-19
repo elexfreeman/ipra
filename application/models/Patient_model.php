@@ -271,17 +271,11 @@ limit 1";
         $patient_id = $this->security->xss_clean($patient_id);
         $sql = "select * from ipre_patients patient
 
+                where patient.id = ".$patient_id."
 
-join ipre_xml i_xml
-on i_xml.patient_id=patient.id
-
-where patient.id = ".$patient_id."
-
-order by i_xml.insert_date desc
-limit 1";
+                limit 1";
         $query = $this->dbMySQL->query($sql);
-        $row = $query->result_array();
-        return $row[0];
+        return $query->row_array();
     }
 
 

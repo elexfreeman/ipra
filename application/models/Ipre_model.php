@@ -18,6 +18,7 @@ class Ipre_model extends CI_Model
     public $PatientsSQL = '[vaccination2].[dbo].[VACD_Patient]';
 
     public $XMLPath = 'exe\XML';
+    public $XMLPatientsPath = 'xml_patients';
     public $LPUPath = 'lpu';
     public $tfomsURL = '10.2.22.5:8788';
     public $patient_xml_table = 'ipre_xml';
@@ -915,12 +916,17 @@ class Ipre_model extends CI_Model
     }
 
 
-    public  function IncertPatient2($xmlstring='')
+    public  function IncertPatient2($xmlstring='',$patient_xml)
     {
+        if(true)
+        {
+            unset($patient);
+            unset($xml);
 
 
             $xmlstring = str_replace("ct:", "", $xmlstring);
             $xml = new SimpleXMLElement($xmlstring);
+
 
             $patient = array();
 
@@ -1122,60 +1128,80 @@ class Ipre_model extends CI_Model
             $patient['FIOHead_SecondName'] = '' . "";
             if (isset($xml->FIOHead->SecondName)) $patient['FIOHead_SecondName'] = $xml->FIOHead->SecondName . "";
 
-        $patient_id=0;
-        //$patient['BirthDate'] = '' . "";
-        if (isset($xml->Person->BirthDate)) $patient['BirthDate'] = $xml->Person->BirthDate . "";
+            $patient['xml_file']= $patient_xml;
+            $patient_id=0;
+            //$patient['BirthDate'] = '' . "";
+            if (isset($xml->Person->BirthDate)) $patient['BirthDate'] = $xml->Person->BirthDate . "";
 
-        if(isset($xml->Person->SNILS))
-        {
-            /*обновляем по снилсу*/
-            $patient_id=$this->GetPatientBySnils($xml->Person->SNILS);
-            if($patient_id==0)
+            if(isset($xml->Person->SNILS))
             {
-                $this->dbMySQL->reset_query();
-                $this->dbMySQL->insert($this->patient_model->patient_table, $patient);
-                $patient_id=$this->dbMySQL->insert_id();
-
-                /*Вставлям xml*/
-                $arg=array();
-                $arg['insert_date']=date('Y-m-d');
-                $arg['xml']=$xmlstring;
-                $arg['patient_id']=$patient_id;
-                $this->dbMySQL->insert($this->patient_xml_table, $arg);
-
-
-                unset($arg);
-                $arg=array();
-                /*Ищем по тфомсу*/
-                $arg['SNILS'] = urlencode($this->NormalizeSNILS($xml->Person->SNILS));
-                $tfoms = $this->tfoms_search_new($arg);
-                if($tfoms->LPU_CODE!='20200')
+                /*обновляем по снилсу*/
+                $patient_id=$this->GetPatientBySnils($xml->Person->SNILS);
+                if($patient_id==0)
                 {
-                    $data=array();
-                    $data['LPUCODE']=$tfoms->LPU_CODE;
+                    $this->dbMySQL->reset_query();
+                    $this->dbMySQL->insert($this->patient_model->patient_table, $patient);
+                    $patient_id=$this->dbMySQL->insert_id();
+
+                    /*Вставлям xml*/
+                    $arg=array();
+                    $arg['insert_date']=date('Y-m-d');
+                    $arg['xml']=$xmlstring;
+                    $arg['patient_id']=$patient_id;
+                    $this->dbMySQL->insert($this->patient_xml_table, $arg);
+
+
+                    unset($arg);
+                    $arg=array();
+                    /*Ищем по тфомсу*/
+                    $arg['SNILS'] = urlencode($this->NormalizeSNILS($xml->Person->SNILS));
+                    $tfoms = $this->tfoms_search_new($arg);
+                    if($tfoms->LPU_CODE!='20200')
+                    {
+                        $data=array();
+                        $data['LPUCODE']=$tfoms->LPU_CODE;
+                        $this->dbMySQL->where('id', $patient_id);
+                        $this->dbMySQL->update($this->patient_model->patient_table,$data);
+                        echo "UPDATE";
+                    }
+                }
+                else
+                {
+                    $this->dbMySQL->reset_query();
                     $this->dbMySQL->where('id', $patient_id);
-                    $this->dbMySQL->update($this->patient_model->patient_table,$data);
-                    echo "UPDATE";
+                    $this->dbMySQL->update('ipre_patients', $patient);
+                }
+            }
+            elseif((isset($xml->Person->FIO->LastName))and(isset($xml->Person->FIO->FirstName))and(isset($xml->Person->FIO->SecondName))and
+                (isset($xml->Person->BirthDate)))
+            {
+                $patient_id=$this->GetPatientByFIOB($xml->Person->FIO->LastName,$xml->Person->FIO->FirstName,$xml->Person->FIO->SecondName
+                    ,$xml->Person->BirthDate);
+                if($patient_id==0)
+                {
+                    $this->dbMySQL->reset_query();
+                    $this->dbMySQL->insert($this->patient_model->patient_table, $patient);
+                    $patient_id=$this->dbMySQL->insert_id();
+
+                    /*Вставлям xml*/
+                    $arg=array();
+                    $arg['insert_date']=date('Y-m-d');
+                    $arg['xml']=$xmlstring;
+                    $arg['patient_id']=$patient_id;
+                    //$this->dbMySQL->insert($this->patient_xml_table, $arg);
+                }
+                else
+                {
+                    $this->dbMySQL->reset_query();
+                    $this->dbMySQL->where('id', $patient_id);
+                    $this->dbMySQL->update('ipre_patients', $patient);
                 }
             }
             else
             {
                 $this->dbMySQL->reset_query();
-                $this->dbMySQL->where('id', $patient_id);
-                $this->dbMySQL->update('ipre_patients', $patient);
-            }
-        }
-        elseif((isset($xml->Person->FIO->LastName))and(isset($xml->Person->FIO->FirstName))and(isset($xml->Person->FIO->SecondName))and
-            (isset($xml->Person->BirthDate)))
-        {
-            $patient_id=$this->GetPatientByFIOB($xml->Person->FIO->LastName,$xml->Person->FIO->FirstName,$xml->Person->FIO->SecondName
-                ,$xml->Person->BirthDate);
-            if($patient_id==0)
-            {
-                $this->dbMySQL->reset_query();
                 $this->dbMySQL->insert($this->patient_model->patient_table, $patient);
                 $patient_id=$this->dbMySQL->insert_id();
-
                 /*Вставлям xml*/
                 $arg=array();
                 $arg['insert_date']=date('Y-m-d');
@@ -1183,28 +1209,13 @@ class Ipre_model extends CI_Model
                 $arg['patient_id']=$patient_id;
                 $this->dbMySQL->insert($this->patient_xml_table, $arg);
             }
-            else
-            {
-                $this->dbMySQL->reset_query();
-                $this->dbMySQL->where('id', $patient_id);
-                $this->dbMySQL->update('ipre_patients', $patient);
-            }
-        }
-        else
-        {
-            $this->dbMySQL->reset_query();
-            $this->dbMySQL->insert($this->patient_model->patient_table, $patient);
-            $patient_id=$this->dbMySQL->insert_id();
-            /*Вставлям xml*/
-            $arg=array();
-            $arg['insert_date']=date('Y-m-d');
-            $arg['xml']=$xmlstring;
-            $arg['patient_id']=$patient_id;
-            $this->dbMySQL->insert($this->patient_xml_table, $arg);
+
+            echo $this->functions->encodestring($patient_id." ".$xml->Person->FIO->LastName
+                    ." ".$xml->Person->FIO->FirstName." ".$xml->Person->FIO->SecondName)."\r\n";
         }
 
-        echo $this->functions->encodestring($patient_id." ".$xml->Person->FIO->LastName
-                ." ".$xml->Person->FIO->FirstName." ".$xml->Person->FIO->SecondName)."\r\n";
+
+
 
     }
 
@@ -1268,7 +1279,309 @@ class Ipre_model extends CI_Model
                                 unset($xml);
                                 unset($xmlstring);
                                 $xmlstring = file_get_contents($this->XMLPath . '\\' . $folder . "\\" . $folder2 . "\\" . $patient_xml);
-                                $this->IncertPatient2($xmlstring);
+                                /*Копируем файл пациента в папку*/
+                                if (!copy($this->XMLPath . '\\' . $folder . "\\" . $folder2 . "\\" . $patient_xml
+                                    , $this->XMLPatientsPath . '\\'. $patient_xml
+                                )) {
+                                    echo "Cant copy patient XML File...\n";
+                                }
+                                //$this->IncertPatient2($xmlstring,$patient_xml);
+                                /*пациент*/
+                                if(true)
+                                {
+                                    unset($patient);
+                                    unset($xml);
+
+                                    $xmlstring = str_replace("ct:", "", $xmlstring);
+                                    $xml = new SimpleXMLElement($xmlstring);
+
+
+                                    $patient = array();
+
+                                    $patient['lastName'] = '' . "";
+                                    if (isset($xml->Person->FIO->LastName)) $patient['lastName'] = $xml->Person->FIO->LastName . "";
+
+                                    $patient['FirstName'] = '' . "";
+                                    if (isset($xml->Person->FIO->FirstName)) $patient['FirstName'] = $xml->Person->FIO->FirstName . "";
+
+                                    $patient['SecondName'] = '' . "";
+                                    if (isset($xml->Person->FIO->SecondName)) $patient['SecondName'] = $xml->Person->FIO->SecondName . "";
+
+                                    //$patient['BirthDate'] = '' . "";
+                                    if (isset($xml->Person->BirthDate)) $patient['BirthDate'] = $xml->Person->BirthDate . "";
+
+                                    $patient['SNILS'] = '' . "";
+                                    if (isset($xml->Person->SNILS)) $patient['SNILS'] = $xml->Person->SNILS . "";
+
+                                    $patient['RegAddress'] = '' . "";
+                                    if (isset($xml->Person->RegAddress->Value)) $patient['RegAddress'] = $xml->Person->RegAddress->Value . "";
+
+                                    $patient['RegAddress_Type'] = '' . "";
+                                    if (isset($xml->Person->RegAddress->Type)) $patient['RegAddress_Type'] = $xml->Person->RegAddress->Type . "";
+
+                                    $patient['Buro_FullName'] = '' . "";
+                                    if (isset($xml->Buro->FullName)) $patient['Buro_FullName'] = $xml->Buro->FullName . "";
+
+                                    $patient['Recipient_Name'] = '' . "";
+                                    if (isset($xml->Recipient->Name)) $patient['Recipient_Name'] = $xml->Recipient->Name . "";
+
+                                    $patient['Recipient_Address'] = '' . "";
+                                    if (isset($xml->Recipient->Address)) $patient['Recipient_Address'] = $xml->Recipient->Address . "";
+
+                                    $patient['Recipient_RecipientType'] = '' . "";
+                                    if (isset($xml->Recipient->RecipientType->Value)) $patient['Recipient_RecipientType'] = $xml->Recipient->RecipientType->Value . "";
+
+                                    $patient['Number'] = '' . "";
+                                    if (isset($xml->Number)) $patient['Number'] = $xml->Number . "";
+
+                                    $patient['ProtocolNum'] = '' . "";
+                                    if (isset($xml->ProtocolNum)) $patient['ProtocolNum'] = $xml->ProtocolNum . "";
+
+                                    //$patient['ProtocolDate'] = '' . "";
+                                    if (isset($xml->ProtocolDate)) {
+                                        $patient['ProtocolDate'] = date('Y-m-d', strtotime($xml->ProtocolDate)) . "";
+                                    }
+
+                                    $patient['IsForChild'] = 1;
+                                    if ((isset($xml->IsForChild)) and ($xml->IsForChild == 'false')) $patient['IsForChild'] = 0;
+
+                                    $patient['Person_Id'] = '' . "";
+                                    if (isset($xml->Person->Id)) $patient['Person_Id'] = $xml->Person->Id . "";
+
+                                    $patient['Age_Years'] = '' . "";
+                                    if (isset($xml->Person->Age->Years)) $patient['Age_Years'] = $xml->Person->Age->Years . "";
+
+                                    $patient['Citizenship'] = '' . "";
+                                    if (isset($xml->Person->Citizenship->Value)) $patient['Citizenship'] = $xml->Person->Citizenship->Value . "";
+
+                                    $patient['LivingAddress'] = '' . "";
+                                    if (isset($xml->Person->LivingAddress->Value)) $patient['LivingAddress'] = $xml->Person->LivingAddress->Value . "";
+
+                                    $patient['LivingAddress_Type'] = '' . "";
+                                    if (isset($xml->Person->LivingAddress->Type->Value)) $patient['LivingAddress_Type'] = $xml->Person->LivingAddress->Type->Value . "";
+
+                                    $patient['LivingAddress_ZipCode'] = '' . "";
+                                    if (isset($xml->Person->LivingAddress->Fields->ZipCode)) $patient['LivingAddress_ZipCode'] = $xml->Person->LivingAddress->Fields->ZipCode . "";
+
+                                    $patient['LivingAddress_Country'] = '' . "";
+                                    if (isset($xml->Person->LivingAddress->Fields->Country)) $patient['LivingAddress_Country'] = $xml->Person->LivingAddress->Fields->Country . "";
+
+                                    $patient['LivingAddress_TerritorySubjectID'] = '' . "";
+                                    if (isset($xml->Person->LivingAddress->Fields->TerritorySubjectID)) $patient['LivingAddress_TerritorySubjectID'] = $xml->Person->LivingAddress->Fields->TerritorySubjectID . "";
+
+
+                                    $patient['LivingAddress_TerritorySubjectName'] = '' . "";
+                                    if (isset($xml->Person->LivingAddress->Fields->TerritorySubjectName)) $patient['LivingAddress_TerritorySubjectName'] = $xml->Person->LivingAddress->Fields->TerritorySubjectName . "";
+
+                                    /* $patient['LivingAddress_PlaceTypeId'] = '' . "";
+                                     if (isset($xml->Person->LivingAddress->Fields->PlaceTypeId)) $patient['LivingAddress_PlaceTypeId'] = $xml->Person->LivingAddress->Fields->PlaceTypeId . "";*/
+
+                                    $patient['LivingAddress_PlaceTypeName'] = 0;
+                                    if (isset($xml->Person->LivingAddress->Fields->PlaceTypeName)) $patient['LivingAddress_PlaceTypeName'] = $xml->Person->LivingAddress->Fields->PlaceTypeName . "";
+
+
+                                    /*  $patient['LivingAddress_PlaceKindId'] = '' . "";
+                                      if (isset($xml->Person->LivingAddress->Fields->PlaceKindId)) $patient['LivingAddress_PlaceKindId'] = $xml->Person->LivingAddress->Fields->PlaceKindId . "";
+                          */
+
+                                    $patient['LivingAddress_PlaceKindName'] = '' . "";
+                                    if (isset($xml->Person->LivingAddress->Fields->PlaceKindName)) $patient['LivingAddress_PlaceKindName'] = $xml->Person->LivingAddress->Fields->PlaceKindName . "";
+
+                                    $patient['LivingAddress_Place'] = '' . "";
+                                    if (isset($xml->Person->LivingAddress->Fields->Place)) $patient['LivingAddress_Place'] = $xml->Person->LivingAddress->Fields->Place . "";
+
+                                    $patient['LivingAddress_CityDistrict'] = '' . "";
+                                    if (isset($xml->Person->LivingAddress->Fields->CityDistrict)) $patient['LivingAddress_CityDistrict'] = $xml->Person->LivingAddress->Fields->CityDistrict . "";
+
+                                    $patient['LivingAddress_Street'] = '' . "";
+                                    if (isset($xml->Person->LivingAddress->Fields->Street)) $patient['LivingAddress_Street'] = $xml->Person->LivingAddress->Fields->Street . "";
+
+                                    $patient['LivingAddress_House'] = '' . "";
+                                    if (isset($xml->Person->LivingAddress->Fields->House)) $patient['LivingAddress_House'] = $xml->Person->LivingAddress->Fields->House . "";
+
+                                    $patient['LivingAddress_Appartment'] = '' . "";
+                                    if (isset($xml->Person->LivingAddress->Fields->Appartment)) $patient['LivingAddress_Appartment'] = $xml->Person->LivingAddress->Fields->Appartment . "";
+
+                                    $patient['Phone'] = '' . "";
+                                    if (isset($xml->Person->Phones->Phone)) $patient['Phone'] = $xml->Person->Phones->Phone . "";
+
+
+                                    $patient['IdentityDoc_Title'] = '' . "";
+                                    if (isset($xml->Person->IdentityDoc->Title)) $patient['IdentityDoc_Title'] = $xml->Person->IdentityDoc->Title . "";
+
+                                    $patient['IdentityDoc_Series'] = '' . "";
+                                    if (isset($xml->Person->IdentityDoc->Series)) $patient['IdentityDoc_Series'] = $xml->Person->IdentityDoc->Series . "";
+
+                                    $patient['IdentityDoc_Number'] = '' . "";
+                                    if (isset($xml->Person->IdentityDoc->Number)) $patient['IdentityDoc_Number'] = $xml->Person->IdentityDoc->Number . "";
+
+                                    $patient['IdentityDoc_Issuer'] = '' . "";
+                                    if (isset($xml->Person->IdentityDoc->Issuer)) $patient['IdentityDoc_Issuer'] = $xml->Person->IdentityDoc->Issuer . "";
+
+                                    //$patient['IdentityDoc_IssueDate'] = '';
+                                    if (isset($xml->Person->IdentityDoc->IssueDate)) $patient['IdentityDoc_IssueDate'] = date('Y-m-d', strtotime($xml->Person->IdentityDoc->IssueDate)) . "";
+
+                                    $patient['IsMale'] = 1;
+                                    if ((isset($xml->Person->IsMale)) and ($xml->Person->IsMale == 'false'))
+                                        $patient['IsMale'] = 0;
+
+
+                                    $patient['LifeRestrictions_SelfCare'] = '' . "";
+                                    if (isset($xml->LifeRestrictions->SelfCare)) $patient['LifeRestrictions_SelfCare'] = $xml->LifeRestrictions->SelfCare . "";
+
+                                    $patient['LifeRestrictions_Moving'] = '' . "";
+                                    if (isset($xml->LifeRestrictions->Moving)) $patient['LifeRestrictions_Moving'] = $xml->LifeRestrictions->Moving . "";
+
+                                    $patient['LifeRestrictions_Orientation'] = '' . "";
+                                    if (isset($xml->LifeRestrictions->Orientation)) $patient['LifeRestrictions_Orientation'] = $xml->LifeRestrictions->Orientation . "";
+
+                                    $patient['LifeRestrictions_Communication'] = '' . "";
+                                    if (isset($xml->LifeRestrictions->Communication)) $patient['LifeRestrictions_Communication'] = $xml->LifeRestrictions->Communication . "";
+
+                                    $patient['LifeRestrictions_Learn'] = '' . "";
+                                    if (isset($xml->LifeRestrictions->Learn)) $patient['LifeRestrictions_Learn'] = $xml->LifeRestrictions->Learn . "";
+
+                                    $patient['LifeRestrictions_Work'] = '' . "";
+                                    if (isset($xml->LifeRestrictions->Work)) $patient['LifeRestrictions_Work'] = $xml->LifeRestrictions->Work . "";
+
+                                    $patient['LifeRestrictions_BehaviorControl'] = '' . "";
+                                    if (isset($xml->LifeRestrictions->BehaviorControl)) $patient['LifeRestrictions_BehaviorControl'] = $xml->LifeRestrictions->BehaviorControl . "";
+
+
+                                    $patient['IsFirst'] = 1;
+                                    if ((isset($xml->IsFirst)) and ($xml->IsFirst == 'false'))
+                                        $patient['IsFirst'] = 0;
+
+
+                                    //$patient['EndDate'] = '' . "";
+                                    if (isset($xml->EndDate)) {
+                                        $patient['EndDate'] = date('Y-m-d', strtotime($xml->EndDate)) . "";
+                                    }
+
+                                    //$patient['IssueDate'] = '' . "";
+                                    if (isset($xml->IssueDate)) {
+                                        $patient['IssueDate'] = date('Y-m-d', strtotime($xml->IssueDate)) . "";
+                                    }
+
+                                    $patient['MedSection_EventGroups'] = json_encode(array()) . "";
+                                    if (isset($xml->MedSection->EventGroups)) {
+                                        $patient['MedSection_EventGroups'] = json_encode($xml->MedSection->EventGroups) . "";
+                                    }
+
+                                    $patient['MedSection_PrognozResult'] = json_encode(array()) . "";
+                                    if (isset($xml->MedSection->PrognozResult)) {
+                                        $patient['MedSection_PrognozResult'] = json_encode($xml->MedSection->PrognozResult) . "";
+                                    }
+
+                                    $patient['SenderMedOrgName'] = '' . "";
+                                    if (isset($xml->MedSection->SenderMedOrgName)) $patient['SenderMedOrgName'] = $xml->MedSection->SenderMedOrgName . "";
+
+                                    $patient['RequiredHelp'] = '' . "";
+                                    if (isset($xml->RequiredHelp)) $patient['RequiredHelp'] = json_encode($xml->RequiredHelp) . "";
+
+                                    $patient['IsAgreed'] = 1;
+                                    if ((isset($xml->IsAgreed)) and ($xml->IsAgreed == 'false'))
+                                        $patient['IsAgreed'] = 0;
+
+                                    $patient['IsRepresentativeSign'] = 1;
+                                    if ((isset($xml->IsRepresentativeSign)) and ($xml->IsRepresentativeSign == 'false'))
+                                        $patient['IsRepresentativeSign'] = 0;
+
+                                    $patient['FIOHead_LastName'] = '' . "";
+                                    if (isset($xml->FIOHead->LastName)) $patient['FIOHead_LastName'] = $xml->FIOHead->LastName . "";
+
+                                    $patient['FIOHead_FirstName'] = '' . "";
+                                    if (isset($xml->FIOHead->FirstName)) $patient['FIOHead_FirstName'] = $xml->FIOHead->FirstName . "";
+
+                                    $patient['FIOHead_SecondName'] = '' . "";
+                                    if (isset($xml->FIOHead->SecondName)) $patient['FIOHead_SecondName'] = $xml->FIOHead->SecondName . "";
+
+                                    $patient['xml_file']= $patient_xml;
+                                    $patient_id=0;
+                                    //$patient['BirthDate'] = '' . "";
+                                    if (isset($xml->Person->BirthDate)) $patient['BirthDate'] = date('Y-m-d', strtotime($xml->Person->BirthDate));
+
+                                    if(isset($xml->Person->SNILS))
+                                    {
+                                        /*обновляем по снилсу*/
+                                        $patient_id=$this->GetPatientBySnils($xml->Person->SNILS);
+                                        if($patient_id==0)
+                                        {
+                                            $this->dbMySQL->reset_query();
+                                            $this->dbMySQL->insert($this->patient_model->patient_table, $patient);
+                                            $patient_id=$this->dbMySQL->insert_id();
+
+                                            /*Вставлям xml*/
+                                            $arg=array();
+                                            $arg['insert_date']=date('Y-m-d');
+                                            $arg['xml']=$xmlstring;
+                                            $arg['patient_id']=$patient_id;
+                                            $this->dbMySQL->insert($this->patient_xml_table, $arg);
+
+
+                                            unset($arg);
+                                            $arg=array();
+                                            /*Ищем по тфомсу*/
+                                            $arg['SNILS'] = urlencode($this->NormalizeSNILS($xml->Person->SNILS));
+                                            $tfoms = $this->tfoms_search_new($arg);
+                                            if($tfoms->LPU_CODE!='20200')
+                                            {
+                                                $data=array();
+                                                $data['LPUCODE']=$tfoms->LPU_CODE;
+                                                $this->dbMySQL->where('id', $patient_id);
+                                                $this->dbMySQL->update($this->patient_model->patient_table,$data);
+                                                echo "UPDATE";
+                                            }
+                                        }
+                                        else
+                                        {
+                                            $this->dbMySQL->reset_query();
+                                            $this->dbMySQL->where('id', $patient_id);
+                                            $this->dbMySQL->update('ipre_patients', $patient);
+                                        }
+                                    }
+                                    elseif((isset($xml->Person->FIO->LastName))and(isset($xml->Person->FIO->FirstName))and(isset($xml->Person->FIO->SecondName))and
+                                        (isset($xml->Person->BirthDate)))
+                                    {
+                                        $patient_id=$this->GetPatientByFIOB($xml->Person->FIO->LastName,$xml->Person->FIO->FirstName,$xml->Person->FIO->SecondName
+                                            ,$xml->Person->BirthDate);
+                                        if($patient_id==0)
+                                        {
+                                            $this->dbMySQL->reset_query();
+                                            $this->dbMySQL->insert($this->patient_model->patient_table, $patient);
+                                            $patient_id=$this->dbMySQL->insert_id();
+
+                                            /*Вставлям xml*/
+                                            $arg=array();
+                                            $arg['insert_date']=date('Y-m-d');
+                                            $arg['xml']=$xmlstring;
+                                            $arg['patient_id']=$patient_id;
+                                            //$this->dbMySQL->insert($this->patient_xml_table, $arg);
+                                        }
+                                        else
+                                        {
+                                            $this->dbMySQL->reset_query();
+                                            $this->dbMySQL->where('id', $patient_id);
+                                            $this->dbMySQL->update('ipre_patients', $patient);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        $this->dbMySQL->reset_query();
+                                        $this->dbMySQL->insert($this->patient_model->patient_table, $patient);
+                                        $patient_id=$this->dbMySQL->insert_id();
+                                        /*Вставлям xml*/
+                                        $arg=array();
+                                        $arg['insert_date']=date('Y-m-d');
+                                        $arg['xml']=$xmlstring;
+                                        $arg['patient_id']=$patient_id;
+                                        $this->dbMySQL->insert($this->patient_xml_table, $arg);
+                                    }
+
+                                    echo $this->functions->encodestring($patient_id." ".$xml->Person->FIO->LastName
+                                            ." ".$xml->Person->FIO->FirstName." ".$xml->Person->FIO->SecondName)."\r\n";
+                                }
+                                /*пациент*/
 
 
                             }
