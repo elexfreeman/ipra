@@ -57,6 +57,17 @@ class Patient extends CI_Controller {
                 $this->data['patient'] = $this->patient_model->Info($patient_id);
                 $this->data['patient']['files']=$this->patient_model->GetPatientFiles($patient_id);
 
+                if(isset($this->data['patient']['xml_file']))
+                {
+                    $xmlstring = file_get_contents($this->ipre_model->XMLPatientsPath.'\\'. $this->data['patient']['xml_file']);
+
+                    $xmlstring = str_replace("ct:", "", $xmlstring);
+                    $this->data['xml'] = new SimpleXMLElement($xmlstring);
+                    $this->data['RequiredHelp'] = array();
+                }
+
+
+
                 /*шаблон страницы*/
                 $this->load->view('patients/patient',$this->data);
                 $this->load->view('navbar/nf_admin',$this->data);
@@ -92,8 +103,12 @@ class Patient extends CI_Controller {
             $this->data['user']=$this->session->userdata('auth')->login;
             /*Загруаем пациентов под ЛПУ*/
             $this->data['patient'] = $this->patient_model->Info($patient_id);
-            $this->data['xml'] = new SimpleXMLElement($this->data['patient']['xml']);
-            $this->data['xml_orig']= $this->data['patient']['xml'];
+
+
+            $xmlstring = file_get_contents($this->ipre_model->XMLPatientsPath.'\\'. $this->data['patient']['xml_file']);
+
+            $xmlstring = str_replace("ct:", "", $xmlstring);
+            $this->data['xml'] = new SimpleXMLElement($xmlstring);
 
             echo "<pre>";
             print_r($this->data['xml']);
@@ -123,7 +138,11 @@ class Patient extends CI_Controller {
             header("Cache-Control: post-check=0,pre-check=0");
             header("Cache-Control: max-age=0");
             header("Pragma: no-cache");
-            echo $this->data['patient']['xml'];
+            $xmlstring = file_get_contents($this->ipre_model->XMLPatientsPath.'\\'. $this->data['patient']['xml_file']);
+
+            //$xmlstring = str_replace("ct:", "", $xmlstring);
+            //$this->data['xml'] = new SimpleXMLElement($xmlstring);
+            echo $xmlstring;
         }
         else
         {

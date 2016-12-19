@@ -192,7 +192,7 @@
                                         </div>
                                         <div class="panel-body">
                                             <p>
-                                                <b>ФИО:</b> <?php  ?>
+                                                <b>ФИО:</b> <?php if(isset($xml)) echo $xml->FIOHead->SecondName;?> <?php if(isset($xml)) echo $xml->FIOHead->FirstName;?>. <?php if(isset($xml)) echo $xml->FIOHead->LastName;?>.
                                             </p>
                                         </div>
                                     </div>
@@ -308,27 +308,54 @@
 
             <div class="row">
                 <div class="col-sm-12">
+                    <!--<pre>
+                    <?php /*print_r($xml);*/?>
+                    </pre>-->
+                </div>
+                <div class="col-sm-2"></div>
+                <div class="col-sm-8">
                     <div class="panel panel-info">
                         <div class="panel-heading">
-                            <h3 class="panel-title">Медицинские данные:</h3>
+                            <h3 class="panel-title">Необходимая помощь:</h3>
                         </div>
                         <div class="panel-body">
-                            <div class="col-sm-6">
-                                <b>Группа: </b><br><?php //echo $xml->MedSection->EventGroups->Group->GroupType->Value; ?></div>
-                            <?php
-                           /* $PeriodTo = strtotime( $xml->MedSection->EventGroups->Group->PeriodTo );
-                            $PeriodTo = date( 'd.m.Y', $PeriodTo );
-
-                            $PeriodFrom = strtotime( $xml->MedSection->EventGroups->Group->PeriodFrom );
-                            $PeriodFrom = date( 'd.m.Y', $PeriodFrom );*/
-                            ?>
-                            <div class="col-sm-12"><b>Период с:</b> <?php //echo $PeriodFrom; ?> <b>
-                                    по:</b> <?php //echo $PeriodTo; ?></div>
-
-                            <div class="col-sm-6"><b>Мед. организация получатель: </b><br><?php //echo $xml->MedSection->SenderMedOrgName; ?></div>
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead>
+                                    <tr>
+                                        <th class="text-center">№</th>
+                                        <th>Наименование</th>
+                                        <th>Статус</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <?php
+                                    if(isset($xml->RequiredHelp->HelpItems))
+                                    {
+                                        foreach($xml->RequiredHelp->HelpItems->HelpItem as $HelpItem)
+                                        {
+                                            ?>
+                                            <tr>
+                                                <td class="text-center"><?php echo $HelpItem->HelpCategory->Id; ?></td>
+                                                <td><?php echo $HelpItem->HelpCategory->Value; ?><td>
+                                                    <label class="form-checkbox form-icon form-danger form-text active">
+                                                        <input type="checkbox"
+                                                               <?php if($HelpItem->Need=='true') echo " checked ";  ?>
+                                                               disabled> Назначено
+                                                    </label>
+                                                </td>
+                                            </tr>
+                                            <?php
+                                        }
+                                    }
+                                    ?>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
+                <div class="col-sm-2"></div>
 
 
             </div>
