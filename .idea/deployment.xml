@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PublishConfigData" serverName="ipra">
+    <serverData>
+      <paths name="ipra">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/" local="$PROJECT_DIR$" web="/" />
+          </mappings>
+          <excludedPaths>
+            <excludedPath path="/exe" />
+            <excludedPath path="/files" />
+            <excludedPath path="/lpu" />
+            <excludedPath local="true" path="$PROJECT_DIR$/exe" />
+            <excludedPath local="true" path="$PROJECT_DIR$/files" />
+            <excludedPath local="true" path="$PROJECT_DIR$/lpu" />
+          </excludedPaths>
+        </serverdata>
+      </paths>
+    </serverData>
+  </component>
+</project>
