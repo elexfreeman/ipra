@@ -160,7 +160,10 @@ class Patient extends CI_Controller {
             /*Загруаем пациентов под ЛПУ*/
             $this->data['patient'] = $this->patient_model->Info($patient_id);
             $this->data['patient_id'] = $patient_id;
-            $this->data['xml'] = new SimpleXMLElement($this->data['patient']['xml']);
+            $xmlstring = file_get_contents($this->ipre_model->XMLPatientsPath.'\\'. $this->data['patient']['xml_file']);
+
+            $xmlstring = str_replace("ct:", "", $xmlstring);
+            $this->data['xml'] = new SimpleXMLElement($xmlstring);
 
             /*Протезирование и ортезирование*/
             $this->data['EventGroups'][36] = $this->patient_model->GetEventGroup($this->data['xml'],36);

@@ -44,16 +44,21 @@
             <div class="col-sm-4">
                 <div class="panel">
                     <div class="panel-heading">
-                        <h3 class="panel-title">ИПРА 1091.6.63/2016</h3>
+                        <h3 class="panel-title">ИПРА <?php if(isset($xml)) echo $xml->Number; ?></h3>
                     </div>
                     <div class="panel-body">
                         <dl class="dl-horizontal">
                             <dt>Номер протокола:</dt>
-                            <dd>1225.6.63/2016</dd>
+                            <dd><?php if(isset($xml)) echo $xml->ProtocolNum; ?></dd>
                             <dt>Дата протокола:</dt>
-                            <dd>2016-10-11</dd>
+                            <dd><?php if(isset($xml)) echo $xml->ProtocolDate; ?></dd>
                             <dt>Для ребенка</dt>
-                            <dd>Да</dd>
+                            <dd><?php
+                                if(isset($xml)) {
+                                    if($xml->IsForChild=='true') echo 'Да';else echo 'Нет';
+                                }
+
+                                ?></dd>
                         </dl>
                     </div>
                 </div>
@@ -66,9 +71,9 @@
                     <div class="panel-body">
                         <dl class="dl-horizontal">
                             <dt>Номер:</dt>
-                            <dd>6</dd>
+                            <dd><?php if(isset($xml)) echo $xml->Buro->Number; ?></dd>
                             <dt>Наименование:</dt>
-                            <dd>Бюро медико-социальной экспертизы № 6, общий профиль</dd>
+                            <dd><?php if(isset($xml)) echo $xml->Buro->OrgName; ?></dd>
                         </dl>
                     </div>
                 </div>
@@ -81,9 +86,9 @@
                     <div class="panel-body">
                         <dl class="dl-horizontal">
                             <dt>Наименование:</dt>
-                            <dd>Министерство здравоохранения Самарской области</dd>
+                            <dd><?php if(isset($xml)) echo $xml->Recipient->Name; ?></dd>
                             <dt>Адрес:</dt>
-                            <dd>443020, Самарская обл, Самара г, Ленинская ул, д. 73</dd>
+                            <dd><?php if(isset($xml)) echo $xml->Recipient->Address; ?></dd>
                         </dl>
                     </div>
                 </div>
@@ -312,11 +317,10 @@
                     <?php /*print_r($xml);*/?>
                     </pre>-->
                 </div>
-                <div class="col-sm-2"></div>
-                <div class="col-sm-8">
+                <div class="col-sm-6">
                     <div class="panel panel-info">
                         <div class="panel-heading">
-                            <h3 class="panel-title">Необходимая помощь:</h3>
+                            <h3 class="panel-title">Виды помощи:</h3>
                         </div>
                         <div class="panel-body">
                             <div class="table-responsive">
@@ -355,7 +359,60 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-sm-2"></div>
+                <div class="col-sm-6">
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Показания к проведению реабилитационных или абилитационных мероприятий:</h3>
+                        </div>
+                        <div class="panel-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead>
+                                    <tr>
+                                        <th>Перечень ограничений основных категорий жизнедеятельности</th>
+                                        <th>Степень ограничения (1, 2, 3)</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <?php
+                                    if(isset($xml->LifeRestrictions))
+                                    {
+                                        ?>
+                                        <tr>
+                                            <td>способности к самообслуживанию:</td>
+                                            <td class="text-center"><?php echo $xml->LifeRestrictions->SelfCare; ?><td>
+                                        </tr>
+                                        <tr>
+                                                <td>способности к передвижению:</td>
+                                                <td class="text-center"><?php echo $xml->LifeRestrictions->Moving; ?><td>
+                                        </tr>
+                                        <tr>
+                                                <td>способности к ориентации:</td>
+                                                <td class="text-center"><?php echo $xml->LifeRestrictions->Orientation; ?><td>
+                                        </tr>
+                                        <tr>
+                                                <td>способности к общению:</td>
+                                                <td class="text-center"><?php echo $xml->LifeRestrictions->Communication; ?><td>
+                                        </tr>
+                                        <tr>
+                                                <td>способности к обучению:</td>
+                                                <td class="text-center"><?php echo $xml->LifeRestrictions->Learn; ?><td>
+                                        </tr>
+                                        <tr>
+                                                <td>способности к трудовой деятельности:</td>
+                                                <td class="text-center"><?php echo $xml->LifeRestrictions->Work; ?><td>
+                                        </tr>
+                                        <tr>
+                                                <td >способности к контролю за своим поведением:</td>
+                                                <td class="text-center"><?php echo $xml->LifeRestrictions->BehaviorControl; ?><td>
+                                        </tr>
+                                    <?php }?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
 
             </div>
