@@ -312,11 +312,6 @@
             </div>
 
             <div class="row">
-                <div class="col-sm-12">
-                    <!--<pre>
-                    <?php /*print_r($xml);*/?>
-                    </pre>-->
-                </div>
                 <div class="col-sm-6">
                     <div class="panel panel-info">
                         <div class="panel-heading">
@@ -345,7 +340,7 @@
                                                     <label class="form-checkbox form-icon form-danger form-text active">
                                                         <input type="checkbox"
                                                                <?php if($HelpItem->Need=='true') echo " checked ";  ?>
-                                                               disabled> Назначено
+                                                               > Назначено
                                                     </label>
                                                 </td>
                                             </tr>
@@ -413,8 +408,245 @@
                         </div>
                     </div>
                 </div>
+            </div>
 
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Мероприятия медицинской реабилитации или абилитации:</h3>
+                        </div>
+                        <div class="panel-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead>
+                                    <tr>
+                                        <th class="text-center">№</th>
+                                        <th>Наименование</th>
+                                        <th>Дата</th>
+                                        <th>Статус</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <?php
+                                    $n = 36;
+                                    $a=false;
+                                    $a_date = '';
+                                    if(isset($xml->MedSection->EventGroups->Group))
+                                    {
+                                        foreach($xml->MedSection->EventGroups->Group as $HelpItem)
+                                        {
+                                            if(($HelpItem->GroupType->Id==$n)and($HelpItem->Need=='true')) {
+                                                $a=true;
+                                                $a_date = $HelpItem->PeriodFrom.' - '.$HelpItem->PeriodTo;
+                                            }
+                                        }
+                                    }
+                                    ?>
+                                    <tr>
+                                        <td class="text-center"><?php echo $n; ?></td>
+                                        <td>Протезирование и ортезирование</td>
+                                        <td><?php echo $a_date;  ?><td>
+                                            <label class="form-checkbox form-icon form-danger form-text active">
+                                                <input type="checkbox"
+                                                    <?php if($a) echo " checked ";  ?>
+                                                       > Нуждается
+                                            </label>
+                                        </td>
+                                    </tr>
 
+                                    <?php
+                                    $n = 35;
+                                    $a=false;
+                                    $a_date = '';
+                                    if(isset($xml->MedSection->EventGroups->Group))
+                                    {
+                                        foreach($xml->MedSection->EventGroups->Group as $HelpItem)
+                                        {
+                                            if(($HelpItem->GroupType->Id==$n)and($HelpItem->Need=='true')) {
+                                                $a=true;
+                                                $a_date = $HelpItem->PeriodFrom.' - '.$HelpItem->PeriodTo;
+                                            }
+                                        }
+                                    }
+                                    ?>
+                                    <tr>
+                                        <td class="text-center"><?php echo $n; ?></td>
+                                        <td>Реконструктивная хирургия</td>
+                                        <td><?php echo $a_date;  ?><td>
+                                            <label class="form-checkbox form-icon form-danger form-text active">
+                                                <input type="checkbox"
+                                                    <?php if($a) echo " checked ";  ?>
+                                                       > Нуждается
+                                            </label>
+                                        </td>
+                                    </tr>
+                                    <?php
+                                    $n = 34;
+                                    $a=false;
+                                    $a_date = '';
+                                    if(isset($xml->MedSection->EventGroups->Group))
+                                    {
+                                        foreach($xml->MedSection->EventGroups->Group as $HelpItem)
+                                        {
+                                            if(($HelpItem->GroupType->Id==$n)and($HelpItem->Need=='true')) {
+                                                $a=true;
+                                                $a_date = $HelpItem->PeriodFrom.' - '.$HelpItem->PeriodTo;
+                                            }
+                                        }
+                                    }
+                                    ?>
+                                    <tr>
+                                        <td class="text-center"><?php echo $n; ?></td>
+                                        <td>Медицинская реабилитация</td>
+                                        <td><?php echo $a_date;  ?><td>
+                                            <label class="form-checkbox form-icon form-danger form-text active">
+                                                <input type="checkbox"
+                                                    <?php if($a) echo " checked ";  ?>  > Нуждается
+                                            </label>
+                                        </td>
+                                    </tr>
+
+                                    <?php
+                                    $n = 37;
+                                    $a=false;
+                                    $a_date = '';
+                                    if(isset($xml->MedSection->EventGroups->Group))
+                                    {
+                                        foreach($xml->MedSection->EventGroups->Group as $HelpItem)
+                                        {
+                                            if(($HelpItem->GroupType->Id==$n)and($HelpItem->Need=='true')) {
+                                                $a=true;
+                                                $a_date = $HelpItem->PeriodFrom.' - '.$HelpItem->PeriodTo;
+                                            }
+                                        }
+                                    }
+                                    ?>
+                                    <tr>
+                                        <td class="text-center"><?php echo $n; ?></td>
+                                        <td>Санаторно-курортное лечение</td>
+                                        <td><?php echo $a_date;  ?><td>
+                                            <label class="form-checkbox form-icon form-danger form-text active">
+                                                <input type="checkbox"
+                                                    <?php if($a) echo " checked ";  ?> > Нуждается
+                                            </label>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Прогноз:</h3>
+                        </div>
+                        <div class="panel-body">
+                            <div class="pad-ver">
+                                <?php
+                                $p=0;
+                                if(isset($xml->MedSection->PrognozResult))
+                                {
+                                    if(isset($xml->MedSection->PrognozResult->FuncRecovery->Id)) $p=2;
+                                    if(isset($xml->MedSection->PrognozResult->FuncCompensation->Id)) $p=1;
+                                }
+                                ?>
+
+                                <!--===================================================-->
+                                <label class="form-radio form-normal form-primary form-text active">
+                                    <input type="radio" name="cl-rd" <?php if($p==1) echo 'checked'; ?> value="1"> Полностью</label>
+                                <label class="form-radio form-normal form-info form-text">
+                                    <input type="radio" name="cl-rd" <?php if($p==2) echo 'checked'; ?> value="2"> Частично</label>
+                                 <!--===================================================-->
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Проф:</h3>
+                        </div>
+                        <div class="panel-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead>
+                                    <tr>
+                                        <th class="text-center">№</th>
+                                        <th>Наименование</th>
+                                        <th>Дата</th>
+                                        <th>Статус</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+
+                                    <tr>
+                                        <td class="text-center">41</td>
+                                        <td>Профессиональная ориентация, осуществляемая в органе службы занятости</td>
+                                        <td><td>
+                                            <label class="form-checkbox form-icon form-danger form-text active">
+                                                <input type="checkbox" value="41" > Нуждается
+                                            </label>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-center">42</td>
+                                        <td>Содействие в трудоустройстве</td>
+                                        <td><td>
+                                            <label class="form-checkbox form-icon form-danger form-text active">
+                                                <input type="checkbox"  value="42" > Нуждается
+                                            </label>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-center">38</td>
+                                        <td>Рекомендации по условиям организации обучения</td>
+                                        <td><td>
+                                            <label class="form-checkbox form-icon form-danger form-text active">
+                                                <input type="checkbox"  value="38" > Нуждается
+                                            </label>
+                                        </td>
+                                    </tr>
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Прогноз:</h3>
+                        </div>
+                        <div class="panel-body">
+                            <div class="pad-ver">
+                                <?php
+                                $p=0;
+                                if(isset($xml->MedSection->PrognozResult))
+                                {
+                                    if(isset($xml->MedSection->PrognozResult->FuncRecovery->Id)) $p=2;
+                                    if(isset($xml->MedSection->PrognozResult->FuncCompensation->Id)) $p=1;
+                                }
+                                ?>
+
+                                <!--===================================================-->
+                                <label class="form-radio form-normal form-primary form-text active">
+                                    <input type="radio" name="cl-rd" <?php if($p==1) echo 'checked'; ?> value="1"> Полностью</label>
+                                <label class="form-radio form-normal form-info form-text">
+                                    <input type="radio" name="cl-rd" <?php if($p==2) echo 'checked'; ?> value="2"> Частично</label>
+                                <!--===================================================-->
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="row">
