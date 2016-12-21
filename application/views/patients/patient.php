@@ -682,10 +682,10 @@
                         <!--===================================================-->
                         <!-- End Striped Table -->
                         <div class="panel-footer text-right">
-                            <button id="demo-state-btn"
+                            <a id="demo-state-btn" href="<?php echo site_url('patient/m_add/'.$patient['id']) ?>"
                                     class="btn btn-lg btn-info" type="button">
                                 Добавить
-                            </button>
+                            </a>
                         </div>
 
                     </div>

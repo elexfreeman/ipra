@@ -19,6 +19,7 @@ class Pg_model extends CI_Model
         $this->load->library(array('elex'));
     }
 
+    /*- Результат выполнения мероприятия*/
     public function Get_rhb_res()
     {
         /*
@@ -65,6 +66,7 @@ class Pg_model extends CI_Model
         return $this->db->insert_id();
     }
 
+    /*ИПР/ПРП - реабилитация*/
     public function insert_prg_rhb($data)
     {
         /*
@@ -92,6 +94,7 @@ class Pg_model extends CI_Model
         return $this->db->insert_id();
     }
 
+    /*Мероприятия*/
     public function insert_rhb_dic($data)
     {
         /*
@@ -108,6 +111,7 @@ class Pg_model extends CI_Model
         return $this->db->insert_id();
     }
 
+    /*Типы мероприятий*/
     public function Get_rhb_type()
     {
         /*
@@ -118,11 +122,14 @@ class Pg_model extends CI_Model
         ARC	date	Дата перевода записи в архив
         UDT	TIMESTAMP with time zone	Метка времени изменения записи
         ADT	TIMESTAMP with time zone	Метка времени скачивания записи
+
         */
         $query = $this->db->get('rhb_type');
         return $query->result_array();
     }
-    public function Get_rhb_evnt()
+
+    /*Подтипы мероприятий*/
+    public function Get_rhb_evnt($rhb_type_id)
     {
         /*
         ID    	SERIAL NOT NULL PRIMARY KEY	Ключ
@@ -133,9 +140,28 @@ class Pg_model extends CI_Model
         UDT	TIMESTAMP with time zone	Метка времени изменения записи
         ADT	TIMESTAMP with time zone	Метка времени скачивания записи
         */
-        $query = $this->db->get('rhb_evnt');
+        $query = $this->db->get_where('rhb_evnt', array('typeid' => $rhb_type_id));
         return $query->result_array();
     }
+
+    /*исполнитель*/
+    public function Get_rhb_exc($id)
+    {
+        /*ID    	SERIAL NOT NULL PRIMARY KEY	Ключ
+        NAME  	char(1024)	Полное название
+        SCODE	char(64) 	Короткое название
+        INN	char(10)	ИНН организации
+        OGRN	char(15)	ОГРН организации
+        ARC	date	Дата перевода записи в архив
+        UDT	TIMESTAMP with time zone	Метка времени изменения записи
+        ADT	TIMESTAMP with time zone	Метка времени скачивания записи
+        */
+        $query = $this->db->get_where('rhb_exc', array('id' => $id));
+        return $query->result_array();
+    }
+
+
+
 
 
 

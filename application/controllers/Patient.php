@@ -27,6 +27,7 @@ class Patient extends CI_Controller {
         $this->load->model('auth_model');
         $this->load->model('ipre_model');
         $this->load->model('patient_model');
+        $this->load->model('pg_model');
     }
 
 	public function index()
@@ -239,6 +240,62 @@ class Patient extends CI_Controller {
                 $this->load->view('patients/edit',$this->data);
                 $this->load->view('navbar/nf_admin',$this->data);
                 $this->load->view('nf_footer',$this->data);
+            }
+
+        }
+        else
+        {
+            header('Location: '.base_url('auth'));
+            exit;
+        }
+    }
+
+    public function m_add($patient_id)
+    {
+        $this->form_validation->set_rules('description', 'Описание', 'required');
+
+        $this->data['page']='main';
+        $this->data['patient_id'] = $patient_id;
+        if( $this->auth_model->IsLogin())
+        {
+            if ($this->form_validation->run() == FALSE)
+            {
+                $this->data['auth']=$this->session->userdata('auth');
+                $this->data['main_page_link'] = site_url();
+
+                $this->load->view('nf_head',$this->data);
+                $this->load->view('navbar/nf_admin_topnav',$this->data);
+                $this->data['user']=$this->session->userdata('auth')->login;
+                /*Загруаем пациентов под ЛПУ*/
+                $this->data['patient'] = $this->patient_model->Info($patient_id);
+
+                $this->data['rhb_type'] = $this->pg_model->Get_rhb_type();
+                $this->data['rhb_evnt'] = $this->pg_model->Get_rhb_evnt(2);
+                $this->data['rhb_res'] = $this->pg_model->Get_rhb_res();
+
+
+
+                if(isset($this->data['patient']['xml_file']))
+                {
+                    $xmlstring = file_get_contents($this->ipre_model->XMLPatientsPath.'\\'. $this->data['patient']['xml_file']);
+
+                    $xmlstring = str_replace("ct:", "", $xmlstring);
+                    $this->data['xml'] = new SimpleXMLElement($xmlstring);
+                    $this->data['RequiredHelp'] = array();
+                }
+
+
+
+                /*шаблон страницы*/
+                $this->load->view('patients/m_add.php',$this->data);
+                $this->load->view('navbar/nf_admin',$this->data);
+                $this->load->view('nf_footer',$this->data);
+            }
+            else
+            {
+                $this->patient_model->addFiles($patient_id);
+                /* header('Location: '.base_url());
+                 exit;*/
             }
 
         }
