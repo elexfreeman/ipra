@@ -21,6 +21,16 @@ class Pg_model extends CI_Model
 
     public function Get_rhb_res()
     {
+        /*
+        ID    	SERIAL NOT NULL PRIMARY KEY	Ключ
+        NAME  	char(1024)	Полное название
+        SHNAME	char(64) 	Короткое название
+        ARC	date	Дата перевода записи в архив
+        UDT	TIMESTAMP with time zone	Метка времени изменения записи
+        ADT	TIMESTAMP with time zone	Метка времени скачивания записи
+
+        */
+
         $query = $this->db->get('rhb_res');
         return $query->result_array();
     }
@@ -55,7 +65,7 @@ class Pg_model extends CI_Model
         return $this->db->insert_id();
     }
 
-    public function insert_rhb($data)
+    public function insert_prg_rhb($data)
     {
         /*
         ID    	SERIAL NOT NULL PRIMARY KEY	Ключ
@@ -76,10 +86,60 @@ class Pg_model extends CI_Model
         NOTE  	char(64) 	Примечание
         UDT	TIMESTAMP with time zone	Метка времени изменения записи
         ADT	TIMESTAMP with time zone	Метка времени скачивания записи
-
         */
 
+        $this->db->insert('prg_rhb', $data);
+        return $this->db->insert_id();
     }
+
+    public function insert_rhb_dic($data)
+    {
+        /*
+            ID    	SERIAL NOT NULL PRIMARY KEY	Ключ
+            NAME  	char(1024)	Полное название
+            SHNAME	char(64) 	Короткое название
+            ARC	date	Дата перевода записи в архив
+            UDT	TIMESTAMP with time zone	Метка времени изменения записи
+            ADT	TIMESTAMP with time zone	Метка времени скачивания записи
+        */
+
+        $data['typeid'] = 2;
+        $this->db->insert('rhb_dic', $data);
+        return $this->db->insert_id();
+    }
+
+    public function Get_rhb_type()
+    {
+        /*
+        ID    	SERIAL NOT NULL PRIMARY KEY	Ключ
+        GRPID	int not null	RHB_GRP.ID Раздел
+        NAME  	char(1024)	Полное название
+        SHNAME	char(64) 	Короткое название
+        ARC	date	Дата перевода записи в архив
+        UDT	TIMESTAMP with time zone	Метка времени изменения записи
+        ADT	TIMESTAMP with time zone	Метка времени скачивания записи
+        */
+        $query = $this->db->get('rhb_type');
+        return $query->result_array();
+    }
+    public function Get_rhb_evnt()
+    {
+        /*
+        ID    	SERIAL NOT NULL PRIMARY KEY	Ключ
+        TYPEID	int not null	RHB_TYPE.ID Тип мероприятия
+        NAME  	char(1024)	Полное название
+        SHNAME	char(64) 	Короткое название
+        ARC	date	Дата перевода записи в архив
+        UDT	TIMESTAMP with time zone	Метка времени изменения записи
+        ADT	TIMESTAMP with time zone	Метка времени скачивания записи
+        */
+        $query = $this->db->get('rhb_evnt');
+        return $query->result_array();
+    }
+
+
+
+
 
 
 }

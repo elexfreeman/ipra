@@ -650,16 +650,44 @@
             </div>
 
             <div class="row">
-                <div class="col-sm-12">
+                <div class="col-sm-8">
                     <div class="panel">
-                        <!--Hover Rows-->
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Мероприятия</h3>
+                        </div>
+
+                        <!-- Striped Table -->
                         <!--===================================================-->
                         <div class="panel-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                    <tr>
+                                        <th>№</th>
+                                        <th>Тип</th>
+                                        <th>Подтип</th>
+                                        <th>Мероприятие</th>
+                                        <th>Дата выполения</th>
+                                        <th>Результат</th>
+                                        <th>Статус</th>
+                                        <th></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
 
-
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                         <!--===================================================-->
-                        <!--End Hover Rows-->
+                        <!-- End Striped Table -->
+                        <div class="panel-footer text-right">
+                            <button id="demo-state-btn"
+                                    class="btn btn-lg btn-info" type="button">
+                                Добавить
+                            </button>
+                        </div>
+
                     </div>
                 </div>
 
