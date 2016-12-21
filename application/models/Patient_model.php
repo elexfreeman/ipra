@@ -957,4 +957,21 @@ limit 1";
         return $query->row_array();
 
     }
+
+    public function GetAllp()
+    {
+        $sql = "select * from ipre_patients p
+where p.xml_file <> ''
+
+";
+        $query = $this->dbMySQL->query($sql);
+        return $query->result_array();
+    }
+
+    public function update($id,$data)
+    {
+
+        $this->dbMySQL->where('id', $id);
+        $this->dbMySQL->update('ipre_patients', $data);
+    }
 }
