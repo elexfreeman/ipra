@@ -188,3 +188,24 @@ $db['srvEreg'] = array(
 	'failover' => array(),
 	'save_queries' => TRUE
 );
+
+
+$db['pg'] = array(
+	'hostname' => 'localhost',
+	'username' => 'postgres',
+	'password' => 'postgres',
+	'database' => 'MSE',
+	'dbdriver' => 'postgre',
+	'dbprefix' => '',
+	'pconnect' => TRUE,
+	'db_debug' => TRUE,
+	'cache_on' => FALSE,
+	'cachedir' => '',
+	'char_set' => 'utf8',
+	'dbcollat' => 'utf8_general_ci',
+	'swap_pre' => '',
+	'encrypt' => FALSE,
+	'compress' => FALSE,
+	'stricton' => FALSE
+);
+
