@@ -40,6 +40,79 @@
         <!--===================================================-->
         <div id="page-content">
         <h1><?php echo $patient['LastName']; ?> <?php echo $patient['FirstName']; ?> <?php echo $patient['SecondName']; ?></h1>
+
+            <div class="row">
+                <div class="col-sm-8">
+                    <div class="panel">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Выполнение мероприятий</h3>
+                        </div>
+
+                        <!-- Striped Table -->
+                        <!--===================================================-->
+                        <div class="panel-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                    <tr>
+                                        <th>№</th>
+                                        <th>Тип</th>
+                                        <th>Подтип</th>
+                                        <th>Мероприятие</th>
+                                        <th>Дата выполения</th>
+                                        <th>Результат выполнения</th>
+                                        <th></th>
+                                        <th></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <?php foreach($prg_rhb as $p){ ?>
+                                        <tr>
+                                            <td><?php echo $p['id']; ?></td>
+                                            <td><?php echo $p['rt_name']; ?></td>
+                                            <td><?php echo $p['re_name']; ?></td>
+                                            <td><?php echo $p['name']; ?></td>
+                                            <td><?php echo $p['dt_exc']; ?></td>
+                                            <td>
+                                                <label class="form-checkbox form-icon form-primary form-text">
+                                                    <input
+                                                        <?php if($p['resid']==1) echo 'checked'; ?>
+                                                        disabled type="checkbox"> Выполненно
+                                                </label>
+                                            </td>
+                                            <td>
+                                                <label class="form-checkbox form-icon form-danger form-text">
+                                                    <input
+                                                        <?php if($p['publish']==1) echo 'checked'; ?>
+                                                        disabled type="checkbox"> Опубликовано
+                                                </label>
+                                            </td>
+                                            <td><a
+                                                    href="/patient/m_edit/<?php echo $patient_id; ?>/<?php echo $p['id']; ?>"
+                                                    class="btn btn-default btn-icon icon-lg fa fa-edit"></a></td>
+
+                                        </tr>
+                                    <?php }?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <!--===================================================-->
+                        <!-- End Striped Table -->
+                        <div class="panel-footer text-right">
+                            <?php if (isset($patient['xml_file'])){ ?>
+                                <a id="demo-state-btn" href="<?php echo site_url('patient/m_add/'.$patient['id']) ?>"
+                                   class="btn btn-lg btn-info" type="button">
+                                    Добавить
+                                </a>
+                            <?php }?>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
         <div class="row">
             <div class="col-sm-4">
                 <div class="panel">
@@ -338,7 +411,7 @@
                                                 <td class="text-center"><?php echo $HelpItem->HelpCategory->Id; ?></td>
                                                 <td><?php echo $HelpItem->HelpCategory->Value; ?><td>
                                                     <label class="form-checkbox form-icon form-danger form-text active">
-                                                        <input type="checkbox"
+                                                        <input type="checkbox" disabled
                                                                <?php if($HelpItem->Need=='true') echo " checked ";  ?>
                                                                > Назначено
                                                     </label>
@@ -448,7 +521,7 @@
                                         <td>Протезирование и ортезирование</td>
                                         <td><?php echo $a_date;  ?><td>
                                             <label class="form-checkbox form-icon form-danger form-text active">
-                                                <input type="checkbox"
+                                                <input type="checkbox" disabled
                                                     <?php if($a) echo " checked ";  ?>
                                                        > Нуждается
                                             </label>
@@ -475,7 +548,7 @@
                                         <td>Реконструктивная хирургия</td>
                                         <td><?php echo $a_date;  ?><td>
                                             <label class="form-checkbox form-icon form-danger form-text active">
-                                                <input type="checkbox"
+                                                <input type="checkbox" disabled
                                                     <?php if($a) echo " checked ";  ?>
                                                        > Нуждается
                                             </label>
@@ -501,7 +574,7 @@
                                         <td>Медицинская реабилитация</td>
                                         <td><?php echo $a_date;  ?><td>
                                             <label class="form-checkbox form-icon form-danger form-text active">
-                                                <input type="checkbox"
+                                                <input type="checkbox" disabled
                                                     <?php if($a) echo " checked ";  ?>  > Нуждается
                                             </label>
                                         </td>
@@ -527,7 +600,7 @@
                                         <td>Санаторно-курортное лечение</td>
                                         <td><?php echo $a_date;  ?><td>
                                             <label class="form-checkbox form-icon form-danger form-text active">
-                                                <input type="checkbox"
+                                                <input type="checkbox" disabled
                                                     <?php if($a) echo " checked ";  ?> > Нуждается
                                             </label>
                                         </td>
@@ -641,49 +714,7 @@
                 </div>
             </div>-->
 
-            <div class="row">
-                <div class="col-sm-8">
-                    <div class="panel">
-                        <div class="panel-heading">
-                            <h3 class="panel-title">Мероприятия</h3>
-                        </div>
 
-                        <!-- Striped Table -->
-                        <!--===================================================-->
-                        <div class="panel-body">
-                            <div class="table-responsive">
-                                <table class="table table-striped">
-                                    <thead>
-                                    <tr>
-                                        <th>№</th>
-                                        <th>Тип</th>
-                                        <th>Подтип</th>
-                                        <th>Мероприятие</th>
-                                        <th>Дата выполения</th>
-                                        <th>Результат</th>
-                                        <th>Статус</th>
-                                        <th></th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                        <!--===================================================-->
-                        <!-- End Striped Table -->
-                        <div class="panel-footer text-right">
-                            <a id="demo-state-btn" href="<?php echo site_url('patient/m_add/'.$patient['id']) ?>"
-                                    class="btn btn-lg btn-info" type="button">
-                                Добавить
-                            </a>
-                        </div>
-
-                    </div>
-                </div>
-
-            </div>
         </div>
     </div>
 </div>

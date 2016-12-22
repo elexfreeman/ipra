@@ -9,7 +9,7 @@
 
 ?>
 
-<div class="boxed" ng-app="EvnApp" ng-controller="addCtrl" >
+<div class="boxed" ng-app="EvnApp" ng-controller="editCtrl" >
 
     <input type="hidden" id="patient_id" value="<?php echo $patient['id'];?>">
     <!--CONTENT CONTAINER-->

@@ -44,6 +44,7 @@ class Patient extends CI_Controller {
 
         $this->data['page']='main';
         $this->data['patient_id'] = $patient_id;
+
         if( $this->auth_model->IsLogin())
         {
             if ($this->form_validation->run() == FALSE)
@@ -57,7 +58,7 @@ class Patient extends CI_Controller {
                 /*Загруаем пациентов под ЛПУ*/
                 $this->data['patient'] = $this->patient_model->Info($patient_id);
                 $this->data['patient']['files']=$this->patient_model->GetPatientFiles($patient_id);
-
+                $this->data['prg_rhb'] = $this->patient_model->Get_prg_rhb($this->data['patient']['pg_id']);
                 if(isset($this->data['patient']['xml_file']))
                 {
                     $xmlstring = file_get_contents($this->ipre_model->XMLPatientsPath.'\\'. $this->data['patient']['xml_file']);
@@ -317,12 +318,14 @@ class Patient extends CI_Controller {
             $data['rhb_type'] = $this->pg_model->Get_rhb_type();
             $data['rhb_evnt'] = $this->pg_model->Get_rhb_evnt(2);
             $data['rhb_res'] = $this->pg_model->Get_rhb_res();
-            echo json_encode($data);
+            $data['user'] = $this->auth_model->GetUserByName($this->session->userdata('auth')->login);
+            unset($data['user']['password']);
 
+            echo json_encode($data);
         }
     }
 
-    
+
     public function Get_rhb_evnt($rhb_type_id)
     {
         if( $this->auth_model->IsLogin())
@@ -334,6 +337,114 @@ class Patient extends CI_Controller {
         }
     }
 
+    public function m_save()
+    {
+        if( $this->auth_model->IsLogin())
+        {
+            /*сохраняем*/
+            $data = array();
+            $data['typeid'] = $this->input->post('typeid');
+            $data['evntid'] = $this->input->post('evntid');
+            $data['name'] = $this->input->post('name');
+            if($this->input->post('prgid')!='')
+            {
+                $data['prgid'] = $this->input->post('prgid');
+                if($this->input->post('dt_exc')!='')
+                {
+                    $data['dt_exc'] = $this->input->post('dt_exc') ;;
+                }
+                if($this->input->post('rhb_res')!='')
+                {
+                    if($this->input->post('rhb_res')==1) $data['resid']=1;
+                    else
+                        $data['resid'] = $this->input->post('rhb_res_no');
 
+                }
+                if($this->input->post('agree')=='true')
+                    $data['publish'] = 1;
+                $this->patient_model->insert_prg_rhb($data);
+                echo json_encode(['status'=>1,'data'=>$data]);
+            }
+            else{
+                echo json_encode(['status'=>0]);
+            }
+
+
+        }
+    }
+
+
+    public function m_edit($patient_id,$rhb_id)
+    {
+
+
+        $this->data['page']='main';
+        $this->data['patient_id'] = $patient_id;
+        $this->data['rhb_id'] = $rhb_id;
+        if( $this->auth_model->IsLogin())
+        {
+            if ($this->form_validation->run() == FALSE)
+            {
+                $this->data['auth']=$this->session->userdata('auth');
+                $this->data['main_page_link'] = site_url();
+
+                $this->load->view('nf_head',$this->data);
+                $this->load->view('navbar/nf_admin_topnav',$this->data);
+                $this->data['user']=$this->session->userdata('auth')->login;
+                /*Загруаем пациентов под ЛПУ*/
+                $this->data['patient'] = $this->patient_model->Info($patient_id);
+
+
+
+
+                if(isset($this->data['patient']['xml_file']))
+                {
+                    $xmlstring = file_get_contents($this->ipre_model->XMLPatientsPath.'\\'. $this->data['patient']['xml_file']);
+
+                    $xmlstring = str_replace("ct:", "", $xmlstring);
+                    $this->data['xml'] = new SimpleXMLElement($xmlstring);
+                    $this->data['RequiredHelp'] = array();
+                }
+
+
+
+                /*шаблон страницы*/
+                $this->load->view('patients/m_edit',$this->data);
+                $this->load->view('navbar/nf_admin',$this->data);
+                $this->data['js']=$this->load->view('patients/app_js',$this->data,true);
+                $this->load->view('nf_footer',$this->data);
+            }
+            else
+            {
+                $this->patient_model->addFiles($patient_id);
+                /* header('Location: '.base_url());
+                 exit;*/
+            }
+
+        }
+        else
+        {
+            header('Location: '.base_url('auth'));
+            exit;
+        }
+    }
+
+
+    /*для ерестар*/
+    public function get_prg_rhb($patient_id,$rhb_id)
+    {
+        if( $this->auth_model->IsLogin()){
+            $data['patient'] = $this->patient_model->Info($patient_id);
+            $data['rhb_type'] = $this->pg_model->Get_rhb_type();
+            $this->data['prg_rhb'] = $this->patinet_model->Get_prg_rhb_for_edit($rhb_id);
+            $this->data['rhb_evnt'] = $this->pg_model->Get_rhb_evnt($this->data['evntid']);
+            $data['rhb_res'] = $this->pg_model->Get_rhb_res();
+            $data['user'] = $this->auth_model->GetUserByName($this->session->userdata('auth')->login);
+            unset($data['user']['password']);
+
+            echo json_encode($data);
+        }
+
+    }
 
 }

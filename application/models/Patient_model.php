@@ -974,4 +974,67 @@ where p.xml_file <> ''
         $this->dbMySQL->where('id', $id);
         $this->dbMySQL->update('ipre_patients', $data);
     }
+
+    public function insert_prg_rhb($data)
+    {
+        /*
+        ID    	SERIAL NOT NULL PRIMARY KEY	Ключ
+        PRGID 	int not null	PRG.ID Ключ из таблицы PRG
+        TYPEID	int not null	RHB_TYPE.ID Тип мероприятия
+        EVNTID	int      	RHB_EVNT.ID Подтип мероприятия
+        DICID 	int      	RHB_DIC.ID Мероприятие из справочника
+        TSRID 	int      	RHB_TSR.ID Мероприятие из справочника
+        NAME  	char(128)	Название мероприятия (если нет в справочнике)
+        DT_EXC	date     	Дата выполнения мероприятия
+        EXCID 	int      	RHB_EXC.ID Исполнитель мероприятия из справочника
+        EXECUT	char(128)	Исполнитель мероприятия (если нет в справочнике)
+        RESID 	int      	RHB_RES.ID Результат выполнения мероприятия из справочника
+        PAR1	int	Параметр 1 (в резерве)
+        PAR2	int	Параметр 2 (в резерве)
+        PAR3	int	Параметр 3 (в резерве)
+        RESULT	char(128)	Результат выполнения мероприятия (+ Реквизиты контракта)
+        NOTE  	char(64) 	Примечание
+        UDT	TIMESTAMP with time zone	Метка времени изменения записи
+        ADT	TIMESTAMP with time zone	Метка времени скачивания записи
+        */
+
+        $this->dbMySQL->insert('prg_rhb', $data);
+        return $this->dbMySQL->insert_id();
+    }
+
+    public function Get_prg_rhb($id)
+    {
+        $id=(int)$id;
+        $this->dbMySQL->reset_query();
+        $sql = "
+        select
+            pr.`*`,
+            rt.NAME rt_name,
+            re.NAME re_name
+            from prg_rhb pr
+
+            join rhb_type rt
+            on rt.ID = pr.typeid
+
+            join  rhb_evnt re
+            on re.ID = pr.evntid
+
+            where pr.prgid = ".$id;
+        $query = $this->dbMySQL->query($sql);
+        return $query->result_array();
+    }
+
+    public function Get_prg_rhb_for_edit($id)
+    {
+        $id=(int)$id;
+        $this->dbMySQL->reset_query();
+        $sql = "
+        select
+            pr.`*`
+            from prg_rhb pr
+
+            where id = ".$id;
+        $query = $this->dbMySQL->query($sql);
+        return $query->result_array();
+    }
 }

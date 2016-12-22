@@ -5,14 +5,14 @@
 var EvnApp = angular.module('EvnApp', ['ngAnimate','ngResource','httpPostFix','ngRoute','ngCookies','ngSanitize']);
 
 
-/* Редактирование мероприятия */
+/* Добавление мероприятия */
 EvnApp.controller('addCtrl', [
     '$scope', '$rootScope', '$http', '$location', '$routeParams', '$templateCache',
     function ($scope, $rootScope, $http, $location, $routeParams, $templateCache) {
 
         /*обновление выбора Подтип мероприятияы*/
         $scope.update_rhb_type = function () {
-            $http.get("/patient/Get_rhb_evnt/" + $scope.rhb_type)
+            $http.get("/patient/Get_rhb_evnt/" + $scope.formInfo.typeid)
                 .then(function (response) {
                     $scope.rhb_evnt_data = response.data;
                 } );
@@ -21,14 +21,14 @@ EvnApp.controller('addCtrl', [
         $scope.m_save = function() {
            /*сохраниение*/
             $http.post(
-                '/patient/m_save',
+                '/patient/m_save/' + $scope.patient_id,
                 $.param($scope.formInfo)
             )
-                .success(function(response) {
+                .success(function (response) {
                     /*todo проверка на ошибки*/
                     /* $location.path('/appCalendarEditEvent/'+response.event+"/");*/
-                    $scope.res = response;
 
+                    location.replace('/patient/show/' + $scope.patient_id);
 
                 });
         };
@@ -36,12 +36,69 @@ EvnApp.controller('addCtrl', [
         /*заничение пациента ID*/
         $scope.patient_id = $("#patient_id").val();
 
+        //$scope.formInfo = [];
         /*инфа об пациента*/
         $http.get("/patient/Get_m_add_form/" + $scope.patient_id)
             .then(function (response) {
                 $scope.res = response;
-
-
+                $scope.formInfo = {
+                    'lpu' : response.data.user,
+                    'prgid' : response.data.patient.pg_id
+                };
             });
     }
 ]);
+
+
+/* Редактирование мероприятия */
+EvnApp.controller('editCtrl', [
+    '$scope', '$rootScope', '$http', '$location', '$routeParams', '$templateCache',
+    function ($scope, $rootScope, $http, $location, $routeParams, $templateCache) {
+
+        /*обновление выбора Подтип мероприятияы*/
+        $scope.update_rhb_type = function () {
+            $http.get("/patient/Get_rhb_evnt/" + $scope.formInfo.typeid)
+                .then(function (response) {
+                    $scope.rhb_evnt_data = response.data;
+                } );
+        };
+
+        $scope.m_update = function() {
+            /*сохраниение*/
+            $http.post(
+                '/patient/m_update/' + $scope.patient_id,
+                $.param($scope.formInfo)
+            )
+                .success(function (response) {
+                    /*todo проверка на ошибки*/
+                    /* $location.path('/appCalendarEditEvent/'+response.event+"/");*/
+
+                    location.replace('/patient/show/' + $scope.patient_id);
+
+                });
+        };
+
+        /*заничение пациента ID*/
+        $scope.patient_id = $("#patient_id").val();
+        $scope.rhb_id = $("#rhb_id").val();
+
+        //$scope.formInfo = [];
+        /*инфа об пациента*/
+        $http.get("/patient/get_prg_rhb/" + $scope.patient_id + "/" + $scope.rhb_id)
+            .then(function (response) {
+                $scope.res = response;
+                $scope.formInfo = {
+                    'lpu' : response.data.user,
+                    'prgid' : response.data.patient.pg_id
+                };
+            });
+    }
+]);
+
+
+$('.hasDatepicker2').datetimepicker({
+    format : 'Y-m-d',
+    lang : 'ru',
+    timepicker : false,
+    closeOnDateSelect : true
+});
