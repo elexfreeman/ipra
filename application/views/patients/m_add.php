@@ -9,8 +9,9 @@
 
 ?>
 
-<div class="boxed" ng-app="EvnApp" ng-controller="addCtrl" ng-init="patient_id='<?php echo $patient['id'];?>'" >
+<div class="boxed" ng-app="EvnApp" ng-controller="addCtrl" >
 
+    <input type="hidden" id="patient_id" value="<?php echo $patient['id'];?>">
     <!--CONTENT CONTAINER-->
     <!--===================================================-->
     <div id="content-container">
@@ -51,7 +52,7 @@
 
                     <!--Horizontal Form-->
                     <!--===================================================-->
-                    <form class="form-horizontal">
+                    <form class="form-horizontal" name="s_form" role="form">
                         <div class="panel-body">
                             <h4 class="text-info">Мероприятие</h4>
                             <hr>
@@ -59,9 +60,9 @@
                                 <label class="col-sm-3 control-label" for="rhb_evnt">Тип мероприятия</label>
                                 <div class="col-sm-9">
                                     <select class="form-control"
-                                            ng-change="Update()"
-                                            ng-options="opt.id as opt.name for opt in end_years"
-                                            ng-model="rhb_evnt">
+                                            ng-change="update_rhb_type()"
+                                            ng-options="opt.id as opt.name for opt in res.data.rhb_type"
+                                            ng-model="formInfo.rhb_type">
 
                                     </select>
 
@@ -70,7 +71,9 @@
                             <div class="form-group">
                                 <label class="col-sm-3 control-label" for="rhb_type">Подтип мероприятия</label>
                                 <div class="col-sm-9">
-                                    <select class="form-control" ng-model="rhb_type" id="rhb_type">
+                                    <select class="form-control"
+                                            ng-options="opt.id as opt.name for opt in rhb_evnt_data.rhb_evnt"
+                                            ng-model="formInfo.rhb_evnt">
 
                                     </select>
 
@@ -79,13 +82,13 @@
                             <div class="form-group">
                                 <label class="col-sm-3 control-label" for="name">Название мероприятия (если нет в списке)</label>
                                 <div class="col-sm-9">
-                                    <input type="text" id="name" name="name" class="form-control">
+                                    <input type="text" id="name" ng-model="formInfo.m_name" class="form-control">
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="col-sm-3 control-label" for="dt_exc">Дата выполнения мероприятия</label>
                                 <div class="col-sm-9">
-                                    <input type="date" id="dt_exc" name="dt_exc" class="form-control">
+                                    <input type="date" id="dt_exc" ng-model="formInfo.dt_exc" class="form-control">
                                 </div>
                             </div>
                             <br>
@@ -93,25 +96,25 @@
                             <div class="form-group">
                                 <label class="col-sm-3 control-label" for="exc_name">Полное наименование</label>
                                 <div class="col-sm-9">
-                                    <input type="text" id="exc_name" name="exc_name" class="form-control">
+                                    <input type="text" id="exc_name" ng-model="formInfo.exc_name" class="form-control">
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="col-sm-3 control-label" for="exc_scode">Краткое наименование</label>
                                 <div class="col-sm-9">
-                                    <input type="text" id="exc_scode" name="exc_scode" class="form-control">
+                                    <input type="text" id="exc_scode" ng-model="formInfo.exc_scode" class="form-control">
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="col-sm-3 control-label" for="exc_scode">ИНН</label>
+                                <label class="col-sm-3 control-label" for="exc_inn">ИНН</label>
                                 <div class="col-sm-9">
-                                    <input type="text" id="exc_inn" name="exc_inn" class="form-control">
+                                    <input type="text" id="exc_inn" ng-model="formInfo.exc_inn" class="form-control">
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="col-sm-3 control-label" for="exc_scode">ОГРН</label>
+                                <label class="col-sm-3 control-label" for="exc_ogrn">ОГРН</label>
                                 <div class="col-sm-9">
-                                    <input type="text" id="exc_ogrn" name="exc_ogrn" class="form-control">
+                                    <input type="text" id="exc_ogrn" ng-model="formInfo.exc_ogrn" class="form-control">
                                 </div>
                             </div>
                             <br>
@@ -120,16 +123,30 @@
                             <div class="form-group">
                                 <label class="col-sm-3 control-label" for="rhb_res"></label>
                                 <div class="col-sm-9">
-                                        <?php
-                                        foreach($rhb_res as $t)
-                                        {
-                                            ?>
-                                            <label class="form-radio form-normal active form-text form-danger">
-                                                <input type="radio" name="rhb_res" value="<?php echo $t['id'] ?>"> <?php echo $t['name'] ?></label>
-                                            <br>
-                                            <?php
-                                        }
-                                        ?>
+                                    <label class="form-radio form-normal active form-text form-danger">
+                                        <input type="radio" ng-model="formInfo.rhb_res" name="rhb_res" value="1"> Выполненно
+                                    </label>
+                                    <label class="form-radio form-normal active form-text form-danger">
+                                        <input type="radio" ng-model="formInfo.rhb_res" name="rhb_res" value="0"> Не выполненно
+                                    </label>
+
+                                    <div ng-show="formInfo.rhb_res==0" style="margin-top: 20px">
+                                        <label class="control-label text-bold" >Укажите причину</label>
+                                        <label class="form-radio form-normal active form-text form-danger">
+                                            <input type="radio" ng-model="formInfo.rhb_res_no" name="rhb_res_no" value="2"> Инвалид (ребенок-инвалид) либо законный (уполномоченный) представитель не обратился в соответствующий орган государственной власти, орган местного самоуправления, организацию независимо от организационно-правовых форм за предоставлением мероприятий, предусмотренных ИПРА инвалида (ИПРА ребенка-инвалида)
+                                        </label>
+                                        <label class="form-radio form-normal active form-text form-danger">
+                                            <input type="radio" ng-model="formInfo.rhb_res_no" name="rhb_res_no" value="3"> Инвалид (ребенок-инвалид) либо законный (уполномоченный) представитель отказался от того или иного вида, формы и объема мероприятий, предусмотренных ИПРА инвалида (ИПРА ребенка-инвалида)
+                                        </label>
+                                        <label class="form-radio form-normal active form-text form-danger">
+                                            <input type="radio" ng-model="formInfo.rhb_res_no" name="rhb_res_no" value="4"> Инвалид (ребенок-инвалид) либо законный (уполномоченный) представитель отказался от реализации ИПРА инвалида (ИПРА ребенка-инвалида) в целом
+                                        </label>
+                                        <label class="form-radio form-normal active form-text form-danger">
+                                            <input type="radio" ng-model="formInfo.rhb_res_no" name="rhb_res_no" value="5"> Причины неисполнения мероприятий, предусмотренных ИПРА инвалида (ИПРА ребенка-инвалида), при согласии инвалида (ребенка-инвалида) либо законного (уполномоченного) представителя на их реализацию
+                                        </label>
+
+                                    </div>
+
                                 </div>
                             </div>
                             <br>
@@ -138,14 +155,14 @@
                             <div class="form-group">
                                 <div class="col-sm-offset-3 col-sm-9">
                                     <label class="form-checkbox form-normal form-primary form-text">
-                                        <input type="checkbox"> Я соглашаюсь на опубликование!
+                                        <input type="checkbox" ng-model="formInfo.agree"> Я соглашаюсь на опубликование!
                                     </label>
                                 </div>
 
                                 <div class="col-sm-offset-3 col-sm-9" style="margin-top: 20px">
                                     <button class="btn btn-warning " type="submit">Опубликовать</button>
                                 </div>
-
+{{formInfo}}
 
 
 
@@ -153,7 +170,7 @@
                         </div>
                         <div class="panel-footer text-right">
 
-                            <button class="btn btn-info" type="submit">Сохранить</button>
+                            <button class="btn btn-info" type="submit" ng-click="m_save()">Сохранить</button>
 
                         </div>
                     </form>

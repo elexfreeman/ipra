@@ -320,7 +320,20 @@ class Patient extends CI_Controller {
             echo json_encode($data);
 
         }
-
     }
+
+    
+    public function Get_rhb_evnt($rhb_type_id)
+    {
+        if( $this->auth_model->IsLogin())
+        {
+            $data = array();
+            $data['rhb_evnt'] = $this->pg_model->Get_rhb_evnt($rhb_type_id);
+            echo json_encode($data);
+
+        }
+    }
+
+
 
 }
