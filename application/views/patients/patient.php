@@ -567,7 +567,7 @@
                 </div>
             </div>
 
-            <div class="row">
+            <!--<div class="row">
                 <div class="col-sm-6">
                     <div class="panel panel-info">
                         <div class="panel-heading">
@@ -627,27 +627,19 @@
                         </div>
                         <div class="panel-body">
                             <div class="pad-ver">
-                                <?php
-                                $p=0;
-                                if(isset($xml->MedSection->PrognozResult))
-                                {
-                                    if(isset($xml->MedSection->PrognozResult->FuncRecovery->Id)) $p=2;
-                                    if(isset($xml->MedSection->PrognozResult->FuncCompensation->Id)) $p=1;
-                                }
-                                ?>
 
-                                <!--===================================================-->
+
                                 <label class="form-radio form-normal form-primary form-text active">
-                                    <input type="radio" name="cl-rd" <?php if($p==1) echo 'checked'; ?> value="1"> Полностью</label>
+                                    <input type="radio" name="cl-rd" <?php /*if($p==1) echo 'checked'; */?> value="1"> Полностью</label>
                                 <label class="form-radio form-normal form-info form-text">
-                                    <input type="radio" name="cl-rd" <?php if($p==2) echo 'checked'; ?> value="2"> Частично</label>
-                                <!--===================================================-->
+                                    <input type="radio" name="cl-rd" <?php /*if($p==2) echo 'checked'; */?> value="2"> Частично</label>
+
 
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </div>-->
 
             <div class="row">
                 <div class="col-sm-8">
