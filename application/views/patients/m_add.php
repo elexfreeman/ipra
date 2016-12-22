@@ -9,7 +9,7 @@
 
 ?>
 
-<div class="boxed">
+<div class="boxed" ng-app="EvnApp" ng-controller="addCtrl" ng-init="patient_id='<?php echo $patient['id'];?>'" >
 
     <!--CONTENT CONTAINER-->
     <!--===================================================-->
@@ -58,15 +58,11 @@
                             <div class="form-group">
                                 <label class="col-sm-3 control-label" for="rhb_evnt">Тип мероприятия</label>
                                 <div class="col-sm-9">
-                                    <select class="form-control" name="rhb_evnt" id="rhb_evnt">
-                                    <?php
-                                    foreach($rhb_type as $t)
-                                    {
-                                        ?>
-                                        <option <?php if($t['id']==2) echo 'selected'; ?> value="<?php echo $t['id'] ?>"><?php echo $t['name'] ?></option>
-                                        <?php
-                                    }
-                                    ?>
+                                    <select class="form-control"
+                                            ng-change="Update()"
+                                            ng-options="opt.id as opt.name for opt in end_years"
+                                            ng-model="rhb_evnt">
+
                                     </select>
 
                                 </div>
@@ -74,15 +70,8 @@
                             <div class="form-group">
                                 <label class="col-sm-3 control-label" for="rhb_type">Подтип мероприятия</label>
                                 <div class="col-sm-9">
-                                    <select class="form-control" name="rhb_type" id="rhb_type">
-                                    <?php
-                                    foreach($rhb_evnt as $t)
-                                    {
-                                        ?>
-                                        <option value="<?php echo $t['id'] ?>"><?php echo $t['name'] ?></option>
-                                        <?php
-                                    }
-                                    ?>
+                                    <select class="form-control" ng-model="rhb_type" id="rhb_type">
+
                                     </select>
 
                                 </div>

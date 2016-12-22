@@ -9,7 +9,7 @@
 
 ?>
 
-<div class="boxed" ng-app="addEvnApp" ng-controller="defaultCtrl">
+<div class="boxed" >
 
     <!--CONTENT CONTAINER-->
     <!--===================================================-->

@@ -307,4 +307,20 @@ class Patient extends CI_Controller {
         }
     }
 
+    /*форма добавления мероприятия*/
+    public function Get_m_add_form($patient_id)
+    {
+        if( $this->auth_model->IsLogin())
+        {
+            $data = array();
+            $data['patient'] = $this->patient_model->Info($patient_id);
+            $data['rhb_type'] = $this->pg_model->Get_rhb_type();
+            $data['rhb_evnt'] = $this->pg_model->Get_rhb_evnt(2);
+            $data['rhb_res'] = $this->pg_model->Get_rhb_res();
+            echo json_encode($data);
+
+        }
+
+    }
+
 }
