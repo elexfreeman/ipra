@@ -289,6 +289,7 @@ class Patient extends CI_Controller {
                 /*шаблон страницы*/
                 $this->load->view('patients/m_add.php',$this->data);
                 $this->load->view('navbar/nf_admin',$this->data);
+                $this->data['js']=$this->load->view('patients/app_js',$this->data,true);
                 $this->load->view('nf_footer',$this->data);
             }
             else

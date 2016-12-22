@@ -76,7 +76,7 @@
 <script src="<?php echo site_url('js/core/patients.js');?>"></script>
 
 
-
+<?php if(isset($js)) echo $js; ?>
 
 
 </body>
