@@ -42,7 +42,7 @@
         <h1><?php echo $patient['LastName']; ?> <?php echo $patient['FirstName']; ?> <?php echo $patient['SecondName']; ?></h1>
 
             <div class="row">
-                <div class="col-sm-8">
+                <div class="col-md-12 col-lg-8">
                     <div class="panel">
                         <div class="panel-heading">
                             <h3 class="panel-title">Выполнение мероприятий</h3>

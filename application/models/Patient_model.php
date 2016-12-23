@@ -1035,6 +1035,6 @@ where p.xml_file <> ''
 
             where id = ".$id;
         $query = $this->dbMySQL->query($sql);
-        return $query->result_array();
+        return $query->row_array();
     }
 }

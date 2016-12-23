@@ -11,7 +11,8 @@
 
 <div class="boxed" ng-app="EvnApp" ng-controller="editCtrl" >
 
-    <input type="hidden" id="patient_id" value="<?php echo $patient['id'];?>">
+    <input type="hidden" id="patient_id" value="<?php echo $patient_id;?>">
+    <input type="hidden" id="rhb_id" value="<?php echo $rhb_id;?>">
     <!--CONTENT CONTAINER-->
     <!--===================================================-->
     <div id="content-container">
@@ -33,7 +34,7 @@
             <li>
                 <a href="<?php echo site_url('patient/show/'.$patient['id']); ?>"><?php echo $patient['LastName']; ?> <?php echo $patient['FirstName']; ?> <?php echo $patient['SecondName'];?></a>
             </li>
-            <li>Добавить мероприятие ИПРА</li>
+            <li>Редактирование мероприятие ИПРА</li>
 
         </ol>
         <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
@@ -44,10 +45,10 @@
         <!--===================================================-->
         <div id="page-content">
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-12 col-lg-6">
                 <div class="panel">
                     <div class="panel-heading">
-                        <h3 class="panel-title">Добавление мероприятия ИПРА</h3>
+                        <h3 class="panel-title">Редактирование мероприятия ИПРА</h3>
                     </div>
 
                     <!--Horizontal Form-->
@@ -72,7 +73,7 @@
                                 <label class="col-sm-3 control-label" for="rhb_type">Подтип мероприятия</label>
                                 <div class="col-sm-9">
                                     <select class="form-control"
-                                            ng-options="opt.id as opt.name for opt in rhb_evnt_data.rhb_evnt"
+                                            ng-options="opt.id as opt.name for opt in res.data.rhb_evnt"
                                             ng-model="formInfo.evntid">
 
                                     </select>
@@ -162,10 +163,6 @@
                                 <div class="col-sm-offset-3 col-sm-9" style="margin-top: 20px">
                                     <button class="btn btn-warning " type="submit">Опубликовать</button>
                                 </div>
-{{formInfo}}
-
-
-
                             </div>
                         </div>
                         <div class="panel-footer text-right">

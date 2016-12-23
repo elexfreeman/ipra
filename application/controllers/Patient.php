@@ -436,10 +436,11 @@ class Patient extends CI_Controller {
         if( $this->auth_model->IsLogin()){
             $data['patient'] = $this->patient_model->Info($patient_id);
             $data['rhb_type'] = $this->pg_model->Get_rhb_type();
-            $this->data['prg_rhb'] = $this->patinet_model->Get_prg_rhb_for_edit($rhb_id);
-            $this->data['rhb_evnt'] = $this->pg_model->Get_rhb_evnt($this->data['evntid']);
+            $data['prg_rhb'] = $this->patient_model->Get_prg_rhb_for_edit($rhb_id);
+            $data['rhb_evnt'] = $this->pg_model->Get_rhb_evnt($data['prg_rhb']['typeid']);
             $data['rhb_res'] = $this->pg_model->Get_rhb_res();
             $data['user'] = $this->auth_model->GetUserByName($this->session->userdata('auth')->login);
+
             unset($data['user']['password']);
 
             echo json_encode($data);

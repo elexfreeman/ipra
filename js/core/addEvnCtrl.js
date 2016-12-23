@@ -9,7 +9,9 @@ var EvnApp = angular.module('EvnApp', ['ngAnimate','ngResource','httpPostFix','n
 EvnApp.controller('addCtrl', [
     '$scope', '$rootScope', '$http', '$location', '$routeParams', '$templateCache',
     function ($scope, $rootScope, $http, $location, $routeParams, $templateCache) {
+        $scope.formInfo = {
 
+        };
         /*обновление выбора Подтип мероприятияы*/
         $scope.update_rhb_type = function () {
             $http.get("/patient/Get_rhb_evnt/" + $scope.formInfo.typeid)
@@ -19,18 +21,23 @@ EvnApp.controller('addCtrl', [
         };
 
         $scope.m_save = function() {
-           /*сохраниение*/
-            $http.post(
-                '/patient/m_save/' + $scope.patient_id,
-                $.param($scope.formInfo)
-            )
-                .success(function (response) {
-                    /*todo проверка на ошибки*/
-                    /* $location.path('/appCalendarEditEvent/'+response.event+"/");*/
+            if (($scope.formInfo.rhb_res==0)&&($scope.formInfo.rhb_res_no==undefined)) {
+                $scope.modalError="Причина не выполнения";
+                $("#modealError").modal('show');
+            } else{
+                /*сохраниение*/
+                $http.post(
+                    '/patient/m_save/' + $scope.patient_id,
+                    $.param($scope.formInfo)
+                )
+                    .success(function (response) {
+                        /*todo проверка на ошибки*/
+                        /* $location.path('/appCalendarEditEvent/'+response.event+"/");*/
 
-                    location.replace('/patient/show/' + $scope.patient_id);
+                        location.replace('/patient/show/' + $scope.patient_id);
 
-                });
+                    });
+            };
         };
 
         /*заничение пациента ID*/
@@ -87,9 +94,16 @@ EvnApp.controller('editCtrl', [
         $http.get("/patient/get_prg_rhb/" + $scope.patient_id + "/" + $scope.rhb_id)
             .then(function (response) {
                 $scope.res = response;
+
+                /*данные на форме из запроса*/
                 $scope.formInfo = {
-                    'lpu' : response.data.user,
-                    'prgid' : response.data.patient.pg_id
+                    'lpu' : response.data.user
+                    ,'prgid' : response.data.patient.pg_id
+                    ,'typeid' : response.data.prg_rhb.typeid
+                    ,'evntid' : response.data.prg_rhb.evntid
+                    ,'dt_exc' : response.data.prg_rhb.dt_exc
+                    ,'name' : response.data.prg_rhb.name
+                    ,'resid' : response.data.prg_rhb.resid
                 };
             });
     }

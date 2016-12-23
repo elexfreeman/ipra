@@ -11,6 +11,27 @@
 
 <div class="boxed" ng-app="EvnApp" ng-controller="addCtrl" >
 
+    <!--Small Bootstrap Modal-->
+    <!--===================================================-->
+    <div id="modealError" class="modal fade" tabindex="-1">
+        <div class="modal-dialog modal-sm animated bounceIn">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button class="close" data-dismiss="modal"><span>&times;</span></button>
+                    <h4 class="modal-title" id="mySmallModalLabel">Ошибка сохранения! Нужно заполнить следующие поля:</h4>
+                </div>
+                <div class="modal-body">
+                    <p ng-bind="modalError"></p>
+                </div>
+                <div class="modal-footer">
+                    <button data-dismiss="modal" class="btn btn-default" type="button">Закрыть</button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--===================================================-->
+    <!--End Small Bootstrap Modal-->
     <input type="hidden" id="patient_id" value="<?php echo $patient['id'];?>">
     <!--CONTENT CONTAINER-->
     <!--===================================================-->
@@ -44,7 +65,7 @@
         <!--===================================================-->
         <div id="page-content">
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-12 col-lg-6">
                 <div class="panel">
                     <div class="panel-heading">
                         <h3 class="panel-title">Добавление мероприятия ИПРА</h3>
@@ -149,24 +170,7 @@
 
                                 </div>
                             </div>
-                            <br>
-                            <h4 class="text-mint">Соглашение</h4>
-                            <hr>
-                            <div class="form-group">
-                                <div class="col-sm-offset-3 col-sm-9">
-                                    <label class="form-checkbox form-normal form-primary form-text">
-                                        <input type="checkbox" ng-model="formInfo.agree"> Я соглашаюсь на опубликование!
-                                    </label>
-                                </div>
 
-                                <div class="col-sm-offset-3 col-sm-9" style="margin-top: 20px">
-                                    <button class="btn btn-warning " type="submit">Опубликовать</button>
-                                </div>
-{{formInfo}}
-
-
-
-                            </div>
                         </div>
                         <div class="panel-footer text-right">
 
@@ -184,5 +188,4 @@
         </div>
     </div>
 </div>
-
 
